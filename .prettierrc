@@ -1,7 +1,8 @@
 {
+  "singleQuote": true,
+  "parser": "flow",
   "semi": false,
   "trailingComma": "all",
-  "singleQuote": true,
   "printWidth": 80,
   "arrowParens": "avoid"
 }
