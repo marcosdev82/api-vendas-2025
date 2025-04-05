@@ -1,5 +1,5 @@
 {
-  "name": "API Vendas",
+  "name": "api-vendas",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -18,6 +18,8 @@
     "express-async-errors": "^3.1.1",
     "pg": "^8.12.0",
     "reflect-metadata": "^0.2.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "typeorm": "^0.3.20",
     "zod": "^3.24.2"
   },
@@ -26,6 +28,8 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/node": "^22.3.0",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-standard": "^17.1.0",
