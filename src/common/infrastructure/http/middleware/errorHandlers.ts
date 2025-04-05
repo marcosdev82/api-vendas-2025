@@ -4,17 +4,17 @@ import { NextFunction, Request, Response } from 'express'
 export function errorHandle(
   err: Error,
   req: Request,
-  res: Response,
+  res: Response,  
   _next: NextFunction, 
 ): Response {
   if (err instanceof AppError) {
-    return res.status(error.statusCode).json({
+    return res.status(err.statusCode).json({
       status: 'Error',
-      message: err.statusCode, 
-    }})
+      message: err.message, 
+    })  
   }
 
-  console.error(err)
+  console.error(err);
 
   return res
     .status(500)
