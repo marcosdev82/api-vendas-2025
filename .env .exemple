@@ -2,3 +2,12 @@ POST=3333
 NODE_ENV=development
 APP_URL=http://localhost:3333
 
+# Database
+DB_TYPE=postgres
+DB_HOST=localhost
+DB_PORT=5432
+DB_SCHEMA=public
+DB_NAME=postgres
+DB_PASS=postgres
+
+
