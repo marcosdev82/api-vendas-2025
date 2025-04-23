@@ -1,4 +1,6 @@
+import { string } from "zod"
 import { RepositoryInterface, SearchInput, SearchOutput } from "./repository.interfaces"
+import { NotFoundError } from "../errors/not-found-error"
 
 export type ModelProps = {
   id?: string
@@ -20,8 +22,8 @@ export abstract class InMemoryRepository<Model extends ModelProps> implements Re
   insert(model: Model): Promise<Model> {
     throw new Error("Method not implemented.");
   }
-  findById(id: string): Promise<Model> {
-    throw new Error("Method not implemented.");
+  async findById(id: string): Promise<Model> {
+    return this._get(id)
   }
   update(model: Model): Promise<Model> {
     throw new Error("Method not implemented.");
@@ -32,4 +34,17 @@ export abstract class InMemoryRepository<Model extends ModelProps> implements Re
   search(props: SearchInput): Promise<SearchOutput<Model>> {
     throw new Error("Method not implemented.");
   }
+
+  protected async _get(id: string): Promise<Model> {
+
+    const model = this.items.find((item) => item.id === id)
+    
+    if (!model) {
+      throw new NotFoundError(`Model with id ${id} not found`)
+    }
+  
+    return model;
+  }
+  
 }
+
