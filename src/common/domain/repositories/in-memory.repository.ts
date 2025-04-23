@@ -45,6 +45,5 @@ export abstract class InMemoryRepository<Model extends ModelProps> implements Re
   
     return model;
   }
-  
 }
 
