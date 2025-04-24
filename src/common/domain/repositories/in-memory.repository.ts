@@ -31,15 +31,22 @@ export abstract class InMemoryRepository<Model extends ModelProps> implements Re
     this.items.push(model)
     return model;
   }
+
   async findById(id: string): Promise<Model> {
     return this._get(id)
   }
-  update(model: Model): Promise<Model> {
-    throw new Error("Method not implemented.");
+
+  async update(model: Model): Promise<Model> {
+    await this._get(model.id)
+    const index = this.items.findIndex((item) => item.id === model.id)
+    this.items[index] = model
+    return model;  
   }
+
   delete(id: string): Promise<void> {
     throw new Error("Method not implemented.");
   }
+
   search(props: SearchInput): Promise<SearchOutput<Model>> {
     throw new Error("Method not implemented.");
   }
