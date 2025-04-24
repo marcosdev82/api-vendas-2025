@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto"
 import { NotFoundError } from "../errors/not-found-error"
-import { RepositoryInterface } from "./repository.interfaces"
+import { RepositoryInterface, SearchInput, SearchOutput } from "./repository.interfaces"
 
 export type ModelProps = {
   id?: string
@@ -27,8 +27,9 @@ export abstract class InMemoryRepository<Model extends ModelProps> implements Re
     return model as unknown as Model
   }
 
-  insert(model: Model): Promise<Model> {
-    throw new Error("Method not implemented.");
+  async insert(model: Model): Promise<Model> {
+    this.items.push(model)
+    return model;
   }
   async findById(id: string): Promise<Model> {
     return this._get(id)
