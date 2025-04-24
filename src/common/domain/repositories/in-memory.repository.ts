@@ -43,8 +43,10 @@ export abstract class InMemoryRepository<Model extends ModelProps> implements Re
     return model;  
   }
 
-  delete(id: string): Promise<void> {
-    throw new Error("Method not implemented.");
+  async delete(id: string): Promise<void> {
+    await this._get(id)
+    const index = this.items.findIndex((item) => item.id === id)  
+    this.items.splice(index, 1)
   }
 
   search(props: SearchInput): Promise<SearchOutput<Model>> {
