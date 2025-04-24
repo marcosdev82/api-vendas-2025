@@ -1,6 +1,6 @@
-import { string } from "zod"
-import { RepositoryInterface, SearchInput, SearchOutput } from "./repository.interfaces"
+import { randomUUID } from "node:crypto"
 import { NotFoundError } from "../errors/not-found-error"
+import { RepositoryInterface } from "./repository.interfaces"
 
 export type ModelProps = {
   id?: string
@@ -17,8 +17,16 @@ export abstract class InMemoryRepository<Model extends ModelProps> implements Re
   sortableFields: string[] = []
 
   create(props: CreateProps): Model {
-    throw new Error("Method not implemented.");
+    const model = {
+      id: randomUUID,
+      created_at: new Date(),
+      updated_at: new Date(),
+      ...props,
+    }
+
+    return model as unknown as Model
   }
+
   insert(model: Model): Promise<Model> {
     throw new Error("Method not implemented.");
   }
