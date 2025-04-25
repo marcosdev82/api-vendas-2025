@@ -56,8 +56,34 @@ export abstract class InMemoryRepository<Model extends ModelProps> implements Re
      const sort_dir = props.sort_dir || null
      const filter = props.filter || null
 
-     
+
   }
+
+  protected abstract applyFilter(
+    items: Model[], 
+    filter: string
+  ): Promise<Model[]>
+
+  protected async applySort(
+    items: Model[],
+    sort: string | null,
+    sort_dir: string | null
+  ): Promise<Model[]> {
+    if (!sort || !this.sortableFields.includes(sort)) {
+      return items
+    }
+
+    return items.sort((a, b) => {
+      if (a[sort] < b[sort]) {
+        return sort_dir === "asc" ? -1 : 1
+      }
+      if (a[sort] > b[sort]) {
+        return sort_dir === "asc" ? 1 : -1
+      }
+      return 0
+    })
+  }
+
 
   protected async _get(id: string): Promise<Model> {
 
