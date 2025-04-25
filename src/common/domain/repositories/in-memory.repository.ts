@@ -50,6 +50,12 @@ export abstract class InMemoryRepository<Model extends ModelProps> implements Re
   }
 
   search(props: SearchInput): Promise<SearchOutput<Model>> {
+     const page = props.page || 1
+     const per_page = props.per_page || 15
+     const sort = props.sort || null
+     const sort_dir = props.sort_dir || null
+     const filter = props.filter || null
+
      
   }
 
