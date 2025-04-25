@@ -3,6 +3,7 @@ export type SearchInput = {
   per_page?: number
   sort?: string | null 
   sort_dir?: string | null
+  filter: string | null
 }
 
 export type SearchOutput<Model> = {

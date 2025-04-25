@@ -50,7 +50,7 @@ export abstract class InMemoryRepository<Model extends ModelProps> implements Re
   }
 
   search(props: SearchInput): Promise<SearchOutput<Model>> {
-    throw new Error("Method not implemented.");
+     
   }
 
   protected async _get(id: string): Promise<Model> {
