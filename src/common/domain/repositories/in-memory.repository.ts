@@ -73,7 +73,7 @@ export abstract class InMemoryRepository<Model extends ModelProps> implements Re
       return items
     }
 
-    return items.sort((a, b) => {
+    return [...items].sort((a, b) => {
       if (a[sort] < b[sort]) {
         return sort_dir === "asc" ? -1 : 1
       }
