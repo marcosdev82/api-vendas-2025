@@ -57,4 +57,11 @@ describe('InMemoryRepository unit tests', () => {
     })
   })
 
+  describe('inser', () => {
+    it('should insert a new model', async () => {
+      const result = await sut.insert(model)
+      expect(result).toStrictEqual(sut.items[0])
+    })    
+  })
+
 })
