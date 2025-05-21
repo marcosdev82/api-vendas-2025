@@ -50,18 +50,36 @@ describe('InMemoryRepository unit tests', () => {
     }
   })
 
-  describe('create', () => {
-    it('should create a new model', () => {
-      const result = sut.create(props)
-      expect(result.name).toStrictEqual('test name')
-    })
+  it('should create a new model', () => {
+    const result = sut.create(props)
+    expect(result.name).toStrictEqual('test name')
   })
 
-  describe('inser', () => {
-    it('should insert a new model', async () => {
-      const result = await sut.insert(model)
-      expect(result).toStrictEqual(sut.items[0])
-    })    
+  it('should insert a new model', async () => {
+    const result = await sut.insert(model)
+    expect(result).toStrictEqual(sut.items[0])
+  })    
+
+  it('should throw error when id not found', async () => {
+    await expect(sut.findById('fake_id')).rejects.toThrow(
+      new NotFoundError('Model not found using ID fake_id'),
+    )
+
+    const id = randomUUID()
+    
+    await expect(sut.findById(id)).rejects.toThrow(
+      new NotFoundError(`Model not found using ID ${id}`),
+    )
   })
 
+  it('should find a model by id', async () => {
+    const data = await sut.insert(model)
+    const result = await sut.findById(data.id)
+    expect(result).toStrictEqual(data) 
+  })    
+
+  it('should find a model by id', async () => {
+    
+  })
+  
 })
