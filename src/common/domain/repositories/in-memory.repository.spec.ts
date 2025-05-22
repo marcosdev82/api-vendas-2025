@@ -78,8 +78,11 @@ describe('InMemoryRepository unit tests', () => {
     expect(result).toStrictEqual(data) 
   })    
 
-  it('should find a model by id', async () => {
-    
+  it('should throw error when id not found', async () => {
+    await expect(sut.update(model)).rejects.toThrow(
+      new NotFoundError(`Model not found using ID ${model.id}`),
+    )
   })
+
   
 })
