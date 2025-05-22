@@ -84,5 +84,20 @@ describe('InMemoryRepository unit tests', () => {
     )
   })
 
+  it('should update an model', async () => {
+    const data = await sut.insert(model)
+    
+    const modelUpdated = {
+      id: data.id,
+      name: 'updated name',
+      price: 20,
+      created_at,
+      updated_at,
+    }
+
+    const result = await sut.update(modelUpdated)
+    expect(result).toStrictEqual(sut.items[0]) 
+  }) 
+
   
 })
