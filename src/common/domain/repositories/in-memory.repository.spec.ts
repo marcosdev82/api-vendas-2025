@@ -50,72 +50,75 @@ describe('InMemoryRepository unit tests', () => {
     }
   })
 
-  it('should create a new model', () => {
-    const result = sut.create(props)
-    expect(result.name).toStrictEqual('test name')
+  describe('create', () => {
+    it('should create a new model', () => {
+      const result = sut.create(props)
+      expect(result.name).toStrictEqual('test name')
+    })
   })
 
-  it('should insert a new model', async () => {
-    const result = await sut.insert(model)
-    expect(result).toStrictEqual(sut.items[0])
-  })    
-
-  it('should throw error when id not found', async () => {
-    await expect(sut.findById('fake_id')).rejects.toThrow(
-      new NotFoundError('Model not found using ID fake_id'),
-    )
-
-    const id = randomUUID()
-    
-    await expect(sut.findById(id)).rejects.toThrow(
-      new NotFoundError(`Model not found using ID ${id}`),
-    )
+  describe('insert', () => {
+    it('should inserts a new model', async () => {
+      const result = await sut.insert(model)
+      expect(result).toStrictEqual(sut.items[0])
+    })
   })
 
-  it('should find a model by id', async () => {
-    const data = await sut.insert(model)
-    const result = await sut.findById(data.id)
-    expect(result).toStrictEqual(data) 
-  })    
+  describe('findById', () => {
+    it('should throw error when id not found', async () => {
+      await expect(sut.findById('fake_id')).rejects.toThrow(
+        new NotFoundError('Model not found using ID fake_id'),
+      )
+      const id = randomUUID()
+      await expect(sut.findById(id)).rejects.toThrow(
+        new NotFoundError(`Model not found using ID ${id}`),
+      )
+    })
 
-  it('should throw error when id not found', async () => {
-    await expect(sut.update(model)).rejects.toThrow(
-      new NotFoundError(`Model not found using ID ${model.id}`),
-    )
+    it('should find a model by id', async () => {
+      const data = await sut.insert(model)
+      const result = await sut.findById(data.id)
+      expect(result).toStrictEqual(data)
+    })
   })
 
-  it('should update an model', async () => {
-    const data = await sut.insert(model)
-    
-    const modelUpdated = {
-      id: data.id,
-      name: 'updated name',
-      price: 20,
-      created_at,
-      updated_at,
-    }
+  describe('update', () => {
+    it('should throw error when id not found', async () => {
+      await expect(sut.update(model)).rejects.toThrow(
+        new NotFoundError(`Model not found using ID ${model.id}`),
+      )
+    })
 
-    const result = await sut.update(modelUpdated)
-    expect(result).toStrictEqual(sut.items[0]) 
-  }) 
-
-  it('should throw error when id not found', async () => {
-    await expect(sut.delete('fake_id')).rejects.toThrow(
-      new NotFoundError('Model not found using ID fake_id'),
-    )
-
-    const id = randomUUID()
-    
-    await expect(sut.delete(id)).rejects.toThrow(
-      new NotFoundError(`Model not found using ID ${id}`),
-    )
+    it('should update an model', async () => {
+      const data = await sut.insert(model)
+      const modelUpdated = {
+        id: data.id,
+        name: 'updated name',
+        price: 2000,
+        created_at,
+        updated_at,
+      }
+      const result = await sut.update(modelUpdated)
+      expect(result).toStrictEqual(sut.items[0])
+    })
   })
 
-  it('should delete na model', async () => {
-    const data = await sut.insert(model)
-    expect(sut.items.length).toBe(1)
-    const result = await sut.delete(data.id)
-    expect(sut.items.length).toBe(0)
-  })   
+  describe('delete', () => {
+    it('should throw error when id not found', async () => {
+      await expect(sut.delete('fake_id')).rejects.toThrow(
+        new NotFoundError('Model not found using ID fake_id'),
+      )
+      const id = randomUUID()
+      await expect(sut.delete(id)).rejects.toThrow(
+        new NotFoundError(`Model not found using ID ${id}`),
+      )
+    })
 
+    it('should delete an model', async () => {
+      const data = await sut.insert(model)
+      expect(sut.items.length).toBe(1)
+      await sut.delete(data.id)
+      expect(sut.items.length).toBe(0)
+    })
+  })
 })
