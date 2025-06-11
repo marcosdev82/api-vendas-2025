@@ -125,7 +125,9 @@ describe('InMemoryRepository unit tests', () => {
   describe('applyFilter', () => {
     it('should not filter items when items param is null', async () => {
       const items = [model]
+      const spyFilter = jest.spyOn(items, 'filter' as any)
       const result = await sut['applyFilter'](items, null)
+      expect(spyFilter).not.toHaveBeenCalled()
       expect(result).toStrictEqual(items)
     })
 
