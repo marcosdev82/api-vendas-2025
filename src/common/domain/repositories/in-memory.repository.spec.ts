@@ -121,4 +121,14 @@ describe('InMemoryRepository unit tests', () => {
       expect(sut.items.length).toBe(0)
     })
   })
+
+  describe('applyFilter', () => {
+    it('should not filter items when items param is null', async () => {
+      const items = [model]
+      const result = await sut['applyFilter'](items, null)
+      expect(result).toStrictEqual(items)
+    })
+
+  })
+
 })
