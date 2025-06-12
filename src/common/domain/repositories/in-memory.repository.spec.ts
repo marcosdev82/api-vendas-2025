@@ -150,5 +150,18 @@ describe('InMemoryRepository unit tests', () => {
       expect(spyFilterMethod).toHaveBeenCalledTimes(3)
       expect(result).toHaveLength(0)
     })
+
+    it('should not sort items', async () => {
+      const items = [
+        { id: randomUUID(), name: 'test', price: 10, created_at, updated_at },
+        { id: randomUUID(), name: 'TEST', price: 20, created_at, updated_at },
+        { id: randomUUID(), name: 'fake', price: 30, created_at, updated_at },
+      ]
+      let result = await sut['applySort'](items, null, null)
+      expect(result).toStrictEqual(items)
+
+      result = await sut['applySort'](items, 'id', 'asc')
+      expect(result).toStrictEqual(items)
+    })
   })
 })
