@@ -1,6 +1,10 @@
-import { randomUUID } from "node:crypto"
-import { NotFoundError } from "../errors/not-found-error"
-import { RepositoryInterface, SearchInput, SearchOutput } from "./repository.interfaces"
+import { randomUUID } from 'node:crypto'
+import { NotFoundError } from '../errors/not-found-error'
+import {
+  RepositoryInterface,
+  SearchInput,
+  SearchOutput,
+} from './repository.interfaces'
 
 export type ModelProps = {
   id?: string
@@ -11,25 +15,25 @@ export type CreateProps = {
   [key: string]: any
 }
 
-export abstract class InMemoryRepository<Model extends ModelProps> implements RepositoryInterface<Model, CreateProps> {
-  
+export abstract class InMemoryRepository<Model extends ModelProps>
+  implements RepositoryInterface<Model, CreateProps>
+{
   items: Model[] = []
   sortableFields: string[] = []
 
   create(props: CreateProps): Model {
     const model = {
       id: randomUUID(),
-      created_at: new Date(),
+      create_at: new Date(),
       updated_at: new Date(),
       ...props,
     }
-
     return model as unknown as Model
   }
 
   async insert(model: Model): Promise<Model> {
     this.items.push(model)
-    return model;
+    return model
   }
 
   async findById(id: string): Promise<Model> {
@@ -38,14 +42,14 @@ export abstract class InMemoryRepository<Model extends ModelProps> implements Re
 
   async update(model: Model): Promise<Model> {
     await this._get(model.id)
-    const index = this.items.findIndex((item) => item.id === model.id)
+    const index = this.items.findIndex(item => item.id === model.id)
     this.items[index] = model
-    return model;  
+    return model
   }
 
   async delete(id: string): Promise<void> {
     await this._get(id)
-    const index = this.items.findIndex((item) => item.id === id)  
+    const index = this.items.findIndex(item => item.id === id)
     this.items.splice(index, 1)
   }
 
@@ -75,14 +79,14 @@ export abstract class InMemoryRepository<Model extends ModelProps> implements Re
   }
 
   protected abstract applyFilter(
-    items: Model[], 
-    filter: string
+    items: Model[],
+    filter: string | null,
   ): Promise<Model[]>
 
   protected async applySort(
     items: Model[],
     sort: string | null,
-    sort_dir: string | null
+    sort_dir: string | null,
   ): Promise<Model[]> {
     if (!sort || !this.sortableFields.includes(sort)) {
       return items
@@ -90,10 +94,10 @@ export abstract class InMemoryRepository<Model extends ModelProps> implements Re
 
     return [...items].sort((a, b) => {
       if (a[sort] < b[sort]) {
-        return sort_dir === "asc" ? -1 : 1
+        return sort_dir === 'asc' ? -1 : 1
       }
       if (a[sort] > b[sort]) {
-        return sort_dir === "asc" ? 1 : -1
+        return sort_dir === 'asc' ? 1 : -1
       }
       return 0
     })
@@ -109,15 +113,11 @@ export abstract class InMemoryRepository<Model extends ModelProps> implements Re
     return items.slice(start, limit)
   }
 
-
   protected async _get(id: string): Promise<Model> {
-
-    const model = this.items.find((item) => item.id === id)
-    
+    const model = this.items.find(item => item.id === id)
     if (!model) {
-      throw new NotFoundError(`Model with id ${id} not found`)
+      throw new NotFoundError(`Model not found using ID ${id}`)
     }
-  
-    return model;
+    return model
   }
 }
