@@ -179,4 +179,27 @@ describe('InMemoryRepository unit tests', () => {
       expect(result).toStrictEqual([items[1], items[0], items[2]])
     })
   })
+
+  describe('applyPaginate', () => {
+    it('should paginate items', async () => {
+
+      const items = [
+        { id: randomUUID(), name: 'b', price: 10, created_at, updated_at },
+        { id: randomUUID(), name: 'a', price: 20, created_at, updated_at },
+        { id: randomUUID(), name: 'c', price: 30, created_at, updated_at },
+        { id: randomUUID(), name: 'd', price: 10, created_at, updated_at },
+        { id: randomUUID(), name: 'e', price: 20, created_at, updated_at },
+      ]
+
+      let result = await sut['applyPaginate'](items, 1, 2)
+      expect(result).toStrictEqual([items[0], items[1]])
+
+      result = await sut['applyPaginate'](items, 2, 2)
+      expect(result).toStrictEqual([items[2], items[3]])
+
+      result = await sut['applyPaginate'](items, 2, 3)
+      expect(result).toStrictEqual([items[3], items[4]])
+
+    })
+  })
 })
