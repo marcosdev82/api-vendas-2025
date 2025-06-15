@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto'
 import { InMemoryRepository } from './in-memory.repository'
 import { NotFoundError } from '../errors/not-found-error'
+import { date } from 'zod'
 
 type StubModelProps = {
   id: string
@@ -199,7 +200,23 @@ describe('InMemoryRepository unit tests', () => {
 
       result = await sut['applyPaginate'](items, 2, 3)
       expect(result).toStrictEqual([items[3], items[4]])
+    })
+  })
 
+  describe('search', () => {
+    it('should paginate items', async () => { 
+      const items = Array(16).fill(model)
+      sut.items = items
+      const result = await sut.search({ filter: null })
+      expect(result).toStrictEqual({
+        items: Array(15).fill(model),
+        total: 16,
+        current_page: 1,
+        per_page: 15,
+        sort: null,
+        sort_dir: null,
+        filter: null,
+      })
     })
   })
 })
