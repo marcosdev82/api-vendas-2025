@@ -67,6 +67,7 @@ export abstract class InMemoryRepository<Model extends ModelProps>
       page,
       per_page,
     )
+    
     return {
       items: paginatedItems,
       total: filteredItems.length,
