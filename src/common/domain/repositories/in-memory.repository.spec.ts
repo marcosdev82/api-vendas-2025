@@ -219,4 +219,45 @@ describe('InMemoryRepository unit tests', () => {
       })
     })
   })
+
+  describe('search', () => {
+    it('should paginate items', async () => { 
+      const items = Array(16).fill(model)
+      sut.items = items
+      const result = await sut.search({ filter: null })
+      expect(result).toStrictEqual({
+        items: Array(15).fill(model),
+        total: 16,
+        current_page: 1,
+        per_page: 15,
+        sort: null,
+        sort_dir: null,
+        filter: null,
+      })
+    })
+
+    it('should paginate a filtered list', async () => { 
+      const items = [
+        { id: randomUUID(), name: 'test', price: 10, created_at, updated_at },
+        { id: randomUUID(), name: 'a', price: 20, created_at, updated_at },
+        { id: randomUUID(), name: 'TESTE', price: 30, created_at, updated_at },
+        { id: randomUUID(), name: 'TeSt', price: 10, created_at, updated_at },
+      ]
+      sut.items = items
+      const result = await sut.search({
+        page: 1,
+        per_page: 2,
+        filter: 'test',
+      })
+      expect(result).toStrictEqual({
+        items: [items[0], items[2]],
+        total: 3,
+        current_page: 1,
+        per_page: 2,
+        sort: null,
+        sort_dir: null,
+        filter: 'test',
+      })
+    })
+  })
 })
