@@ -2,6 +2,7 @@ import { randomUUID } from 'crypto'
 import { InMemoryRepository } from './in-memory.repository'
 import { NotFoundError } from '../errors/not-found-error'
 import { date } from 'zod'
+import { Console } from 'console'
 
 type StubModelProps = {
   id: string
@@ -251,9 +252,9 @@ describe('InMemoryRepository unit tests', () => {
         { id: randomUUID(), name: 'e', price: 10, created_at, updated_at },
         { id: randomUUID(), name: 'c', price: 10, created_at, updated_at },
       ]
-
+  
       sut.items = items
-
+  
       let result = await sut.search({
         page: 1,
         per_page: 2,
@@ -271,7 +272,7 @@ describe('InMemoryRepository unit tests', () => {
         sort_dir: 'asc',
         filter: null,
       })
-
+  
       result = await sut.search({
         page: 2,
         per_page: 2,
@@ -290,5 +291,53 @@ describe('InMemoryRepository unit tests', () => {
         filter: null,
       })
     }) 
+    
+    it('should apply paginate, sort and filter', async () => {
+      const items = [
+        { id: randomUUID(), name: 'b', price: 10, created_at, updated_at },
+        { id: randomUUID(), name: 'a', price: 20, created_at, updated_at },
+        { id: randomUUID(), name: 'd', price: 30, created_at, updated_at },
+        { id: randomUUID(), name: 'e', price: 10, created_at, updated_at },
+        { id: randomUUID(), name: 'c', price: 10, created_at, updated_at },
+      ]
+
+      sut.items = items
+
+      let result = await sut.search({
+        page: 1,
+        per_page: 2,
+        sort: 'name',
+        sort_dir: 'asc',
+        filter: null,
+      });
+
+      expect(result).toStrictEqual({
+        items: [items[1], items[0]],
+        total: 5,
+        current_page: 1,
+        per_page: 2,
+        sort: 'name',
+        sort_dir: 'asc',
+        filter: null,
+      })
+
+      result = await sut.search({
+        page: 1,
+        per_page: 2,
+        sort: 'name',
+        sort_dir: 'asc',
+        filter: 'b',
+      });
+
+      expect(result).toStrictEqual({
+        items: [items[0]],
+        total: 1,
+        current_page: 1,
+        per_page: 2,
+        sort: 'name',
+        sort_dir: 'asc',
+        filter: 'b',
+      })
+    })
   })
 })
