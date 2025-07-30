@@ -6,17 +6,17 @@ export type ProductId = {
 }
 
 export type CreateProductProps = {
-  id: string; 
-  name: string;
-  price: number;
-  quantity: number;
-  created_at: Date;
-  updated_at: Date;
+  id: string
+  name: string
+  price: number
+  quantity: number
+  created_at: Date
+  updated_at: Date
 }
 
-export interface ProductsRepository  
+export interface ProductsRepository
   extends RepositoryInterface<ProductModel, CreateProductProps> {
   findByName(name: string): Promise<ProductModel>
-  findAllById(ids: ProductId[]): Promise<boolean>
+  findAllByIds(ids: ProductId[]): Promise<ProductModel[]>
   conflictingName(name: string): Promise<void>
 }
