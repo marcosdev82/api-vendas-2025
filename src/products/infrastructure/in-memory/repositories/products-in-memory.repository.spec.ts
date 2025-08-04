@@ -46,4 +46,32 @@ describe('ProductsInMemoryRepository unit tests', () => {
         await sut.conflictingName('Curso nodejs')
       })
   })
+
+  describe('applyFilter', () => {
+      it('should no filter items when filter param is null', async () => {
+        const data = ProductDataBuilder({})
+        sut.items.push(data)
+
+        const spyFilterMethod = jest.spyOn(sut.items, 'filter' as any)
+        const result = await sut['applyFilter'](sut.items, null)
+        expect(spyFilterMethod).not.toHaveBeenCalled()
+        expect(result).toStrictEqual(sut.items)
+      })
+  
+      it('should filter the data using filter param', async () => {
+        const items = [
+          ProductDataBuilder({ name: 'Test' }),
+          ProductDataBuilder({ name: 'TEST' }),
+          ProductDataBuilder({ name: 'fake' }),
+        ]
+        sut.items.push(...items)
+
+        const spyFilterMethod = jest.spyOn(Array.prototype, 'filter')
+        const result = await sut['applyFilter'](sut.items, 'TEST')
+        expect(spyFilterMethod).toHaveBeenCalled()
+        expect(result).toStrictEqual([items[0], items[1]])
+
+        spyFilterMethod.mockRestore() // restaura o método original após o teste
+      })
+  })
 })
