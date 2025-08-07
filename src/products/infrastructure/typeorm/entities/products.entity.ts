@@ -1,4 +1,4 @@
-import { ProductModel } from '@/products/models/products.model';
+import { ProductModel } from '@/products/domain/models/products.model';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('products')
