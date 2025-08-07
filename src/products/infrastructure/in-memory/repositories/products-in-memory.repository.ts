@@ -1,8 +1,8 @@
 import { ConflictError } from "@/common/domain/errors/not-found-conflict-error";
 import { NotFoundError } from "@/common/domain/errors/not-found-error";
 import { InMemoryRepository } from "@/common/domain/repositories/in-memory.repository";
-import { ProductModel } from "@/products/models/products.model";
-import { ProductId, ProductsRepository } from "@/products/respositories/products.respository";
+import { ProductModel } from "@/products/domain/models/products.model";
+import { ProductId, ProductsRepository } from "@/products/domain/respositories/products.respository";
 
 export class ProductsInMemoryRepository
   extends InMemoryRepository<ProductModel> 
