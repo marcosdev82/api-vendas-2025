@@ -49,4 +49,10 @@ export class ProductsTypeormRepository implements ProductsRepository {
   search(props: SearchInput): Promise<SearchOutput<ProductModel>> {
     throw new Error("Method not implemented.");
   }
+
+  protected async _get(id: string): Promise<ProductModel> {
+    const product = await this.productsRepository.findOneBy({ id });
+    if (!product) throw new Error("Product not found");
+    return product;
+  } 
 }
