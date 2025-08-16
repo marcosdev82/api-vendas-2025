@@ -12,8 +12,8 @@ describe('ProductsTypeormRepository integrations tests', () => {
     await testDataSource.destroy()
   })
 
-  beforeEach(() => {
-    
+  beforeEach(async() => {
+    await testDataSource.manager.query('DELETE from products')
   })
 
   describe('method', () => {
