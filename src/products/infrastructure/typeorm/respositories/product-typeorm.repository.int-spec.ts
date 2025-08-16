@@ -1,8 +1,9 @@
 import { testDataSource } from "@/common/infrastructure/typeorm/typeorm/testing/data-source";
 import { ProductsTypeormRepository } from "./product-typeorm.repository";
+import { Product } from "../entities/products.entity";
 
 describe('ProductsTypeormRepository integrations tests', () => {
-  let productsRepository: ProductsTypeormRepository
+  let ormRepository: ProductsTypeormRepository
 
   beforeAll(async() => {
     await testDataSource.initialize() 
@@ -14,6 +15,8 @@ describe('ProductsTypeormRepository integrations tests', () => {
 
   beforeEach(async() => {
     await testDataSource.manager.query('DELETE from products')
+    ormRepository = new ProductsTypeormRepository()
+    ormRepository.productsRepository = testDataSource.getRepository(Product)
   })
 
   describe('method', () => {
