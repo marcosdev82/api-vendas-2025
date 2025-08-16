@@ -5,11 +5,11 @@ describe('ProductsTypeormRepository integrations tests', () => {
   let productsRepository: ProductsTypeormRepository
 
   beforeAll(async() => {
-     await testDataSource.initialize() 
+    await testDataSource.initialize() 
   })
 
-  afterAll(() => {
-
+  afterAll(async() => {
+    await testDataSource.destroy()
   })
 
   beforeEach(() => {
