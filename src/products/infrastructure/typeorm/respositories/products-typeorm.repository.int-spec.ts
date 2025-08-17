@@ -9,18 +9,18 @@ describe('ProductsTypeormRepository integrations tests', () => {
   let ormRepository: ProductsTypeormRepository
 
   beforeAll(async () => {
-    if (!testDataSource.isInitialized) {
-      await testDataSource.initialize()
-    }
-  })
-
-  beforeAll(async () => {
     try {
       if (!testDataSource.isInitialized) {
         await testDataSource.initialize()
       }
     } catch (err) {
       console.error('Erro ao inicializar o banco:', err)
+    }
+  })
+
+  afterAll(async () => {
+    if (testDataSource.isInitialized) {
+      await testDataSource.destroy()
     }
   })
 
@@ -52,4 +52,41 @@ describe('ProductsTypeormRepository integrations tests', () => {
       expect(result.name).toEqual(product.name)
     })
   })
+
+  describe('create', () => {
+    it('should create a new product object', async () => {
+      const data = ProductsDataBuilder({ name: 'Product 1'})
+      const result = ormRepository.create(data)
+      expect(result.name).toEqual(data.name)
+    })
+  })
+
+  describe('insert', () => {
+    it('should insert a new product', async () => {
+      const data = ProductsDataBuilder({ name: 'Product 1'})
+      const result = await ormRepository.insert(data)
+      expect(result.name).toEqual(data.name)
+    })
+  })
+
+  describe('update', () => {
+    it('should generate an error when the product is not found', async () => {
+      const data = ProductsDataBuilder({})
+      await expect(ormRepository.update(data)).rejects.toThrow(
+        new NotFoundError(`Product not found using ID ${data.id}`),
+      )
+    })
+
+    it('should update a product', async () => {
+      const data = ProductsDataBuilder({})
+      const product = testDataSource.manager.create(Product, data)
+      await testDataSource.manager.save(product)
+      product.name = 'Nome atualizado'
+
+      const result = await ormRepository.update(product)
+      expect(result.name).toEqual('Nome atualizado')
+    })
+  })
+
+
 });
