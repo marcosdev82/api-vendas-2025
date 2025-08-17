@@ -28,19 +28,21 @@ export class ProductsTypeormRepository implements ProductsRepository {
   }
 
   create(props: CreateProductProps): ProductModel {
-    throw new Error("Method not implemented.");
+    return this.productsRepository.create(props)
   }
 
-  insert(model: ProductModel): Promise<ProductModel> {
-    throw new Error("Method not implemented.");
+  async insert(model: ProductModel): Promise<ProductModel> {
+    return this.productsRepository.save(model)
   }
 
   async findById(id: string): Promise<ProductModel> {
     return this._get(id)
   }
 
-  update(model: ProductModel): Promise<ProductModel> {
-    throw new Error("Method not implemented.");
+  async update(model: ProductModel): Promise<ProductModel> {
+    await this._get(model.id)
+    await this.productsRepository.update({id: model.id}, model);
+    return model;
   }
 
   delete(id: string): Promise<void> {
