@@ -4,6 +4,7 @@ import { Product } from "../entities/products.entity";
 import { Not } from "typeorm";
 import { NotFoundError } from "@/common/domain/errors/not-found-error";
 import { randomUUID } from "crypto";
+import { ProductDataBuilder } from "../../in-memory/testing/helpers/products-data-builder";
 
 describe('ProductsTypeormRepository integrations tests', () => {
   let ormRepository: ProductsTypeormRepository
@@ -30,4 +31,11 @@ describe('ProductsTypeormRepository integrations tests', () => {
       )
     })
   })
-});
+
+  describe('should finds product by id ', async () => {
+    const data = ProductDataBuilder({})
+    const product = testDataSource.getRepository(Product).create(data)
+    await testDataSource.manager.save(product)
+  })
+
+})
