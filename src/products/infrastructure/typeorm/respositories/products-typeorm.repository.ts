@@ -28,7 +28,7 @@ export class ProductsTypeormRepository implements ProductsRepository {
   }
 
   create(props: CreateProductProps): ProductModel {
-    throw new Error("Method not implemented.");
+    return this.productsRepository.create(props)
   }
 
   insert(model: ProductModel): Promise<ProductModel> {
