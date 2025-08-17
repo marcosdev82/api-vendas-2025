@@ -69,4 +69,24 @@ describe('ProductsTypeormRepository integrations tests', () => {
     })
   })
 
+  describe('update', () => {
+    it('should generate an error when the product is not found', async () => {
+      const data = ProductsDataBuilder({})
+      await expect(ormRepository.update(data)).rejects.toThrow(
+        new NotFoundError(`Product not found using ID ${data.id}`),
+      )
+    })
+
+    it('should update a product', async () => {
+      const data = ProductsDataBuilder({})
+      const product = testDataSource.manager.create(Product, data)
+      await testDataSource.manager.save(product)
+      product.name = 'Nome atualizado'
+
+      const result = await ormRepository.update(product)
+      expect(result.name).toEqual('Nome atualizado')
+    })
+  })
+
+
 });
