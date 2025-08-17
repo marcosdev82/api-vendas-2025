@@ -34,8 +34,8 @@ export class ProductsTypeormRepository implements ProductsRepository {
     throw new Error("Method not implemented.");
   }
 
-  findById(id: string): Promise<ProductModel> {
-    throw new Error("Method not implemented.");
+  async findById(id: string): Promise<ProductModel> {
+    return this._get(id)
   }
 
   update(model: ProductModel): Promise<ProductModel> {
