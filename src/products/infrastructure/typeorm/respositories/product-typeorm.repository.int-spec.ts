@@ -32,10 +32,4 @@ describe('ProductsTypeormRepository integrations tests', () => {
     })
   })
 
-  describe('should finds product by id ', async () => {
-    const data = ProductDataBuilder({})
-    const product = testDataSource.getRepository(Product).create(data)
-    await testDataSource.manager.save(product)
-  })
-
 })
