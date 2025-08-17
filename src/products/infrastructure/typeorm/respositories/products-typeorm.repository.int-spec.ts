@@ -9,18 +9,18 @@ describe('ProductsTypeormRepository integrations tests', () => {
   let ormRepository: ProductsTypeormRepository
 
   beforeAll(async () => {
-    if (!testDataSource.isInitialized) {
-      await testDataSource.initialize()
-    }
-  })
-
-  beforeAll(async () => {
     try {
       if (!testDataSource.isInitialized) {
         await testDataSource.initialize()
       }
     } catch (err) {
       console.error('Erro ao inicializar o banco:', err)
+    }
+  })
+
+  afterAll(async () => {
+    if (testDataSource.isInitialized) {
+      await testDataSource.destroy()
     }
   })
 
