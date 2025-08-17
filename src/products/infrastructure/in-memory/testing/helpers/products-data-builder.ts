@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { ProductModel } from '@/products/domain/models/products.model';
 import { randomUUID } from 'node:crypto';
 
-export function ProductDataBuilder(
+export function ProductsDataBuilder(
   props: Partial<ProductModel>,
 ): ProductModel {
   return {

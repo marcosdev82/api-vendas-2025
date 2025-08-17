@@ -4,6 +4,7 @@ import { CreateProductProps, ProductId, ProductsRepository } from "@/products/do
 import { Product } from "../entities/products.entity";
 import { Repository } from "typeorm";
 import { dataSource } from "@/common/infrastructure/typeorm";
+import { NotFoundError } from "@/common/domain/errors/not-found-error";
 
 export class ProductsTypeormRepository implements ProductsRepository {
 
@@ -34,8 +35,8 @@ export class ProductsTypeormRepository implements ProductsRepository {
     throw new Error("Method not implemented.");
   }
 
-  findById(id: string): Promise<ProductModel> {
-    throw new Error("Method not implemented.");
+  async findById(id: string): Promise<ProductModel> {
+    return this._get(id)
   }
 
   update(model: ProductModel): Promise<ProductModel> {
@@ -52,7 +53,11 @@ export class ProductsTypeormRepository implements ProductsRepository {
 
   protected async _get(id: string): Promise<ProductModel> {
     const product = await this.productsRepository.findOneBy({ id });
-    if (!product) throw new Error("Product not found");
+
+    if (!product) {
+      throw new NotFoundError(`Product not found using ID ${id}`);
+    }
+
     return product;
-  } 
+  }
 }

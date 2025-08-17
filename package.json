@@ -8,7 +8,7 @@
     "test": "npx dotenv-cli -e .env.test -- jest --runInBand",
     "typeorm": "ts-node-dev -r tsconfig-paths/register --transpile-only ./node_modules/typeorm/cli.js",
     "pretest:int": "docker run --name testsdb -e POSTGRES_PASSWORD=postgres -p 5433:5432 -d postgres",
-    "test:int": "npx dotenv-cli -e .env.test -- jest --runInBand --config ./jest.int.config.ts",
+    "test:int": "wait-port -t 5000 localhost:5433 && npx dotenv-cli -e .env.test -- jest --runInBand --config ./jest.int.config.ts",
     "posttest:int": "docker stop testsdb && docker rm testsdb"
   },
   "keywords": [],
@@ -50,6 +50,7 @@
     "ts-node-dev": "^2.0.0",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.5.4",
-    "typescript-eslint": "^8.1.0"
+    "typescript-eslint": "^8.1.0",
+    "wait-port": "^1.1.0"
   }
 }
