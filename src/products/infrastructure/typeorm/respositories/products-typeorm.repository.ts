@@ -15,7 +15,7 @@ export class ProductsTypeormRepository implements ProductsRepository {
     this.productsRepository = dataSource.getRepository(Product);
   }
 
-  protected async findByName(name: string): Promise<ProductModel> {
+  async findByName(name: string): Promise<ProductModel> {
     const product = await this.productsRepository.findOneBy({ name });
 
     if (!product) {
