@@ -4,7 +4,7 @@ import { NotFoundError } from '@/common/domain/errors/not-found-error'
 import { randomUUID } from 'crypto'
 import { ProductsDataBuilder } from '../../in-memory/testing/helpers/products-data-builder'
 import { testDataSource } from '@/common/infrastructure/typeorm/typeorm/testing/data-source'
-import exp from 'constants'
+import { ConflictError } from '@/common/domain/errors/not-found-conflict-error'
 
 describe('ProductsTypeormRepository integrations tests', () => {
   let ormRepository: ProductsTypeormRepository
@@ -127,6 +127,19 @@ describe('ProductsTypeormRepository integrations tests', () => {
 
       const result = await ormRepository.findByName(product.name)
       expect(result.name).toEqual('Product 1')
+    })
+  })
+
+  describe('conflictingName', () => {
+    it('should generate an error when the product found', async () => {
+      const data = ProductsDataBuilder({ name: 'Product 1'})
+      const product = testDataSource.manager.create(Product, data)
+      await testDataSource.manager.save(product)
+
+      await expect(ormRepository.conflictingName('Product 1')).rejects.toThrow(
+        new ConflictError(`Name already used by another product`)
+      )
+
     })
   })
 
