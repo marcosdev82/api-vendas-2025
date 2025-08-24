@@ -4,6 +4,7 @@ import { NotFoundError } from '@/common/domain/errors/not-found-error'
 import { randomUUID } from 'crypto'
 import { ProductsDataBuilder } from '../../in-memory/testing/helpers/products-data-builder'
 import { testDataSource } from '@/common/infrastructure/typeorm/typeorm/testing/data-source'
+import exp from 'constants'
 
 describe('ProductsTypeormRepository integrations tests', () => {
   let ormRepository: ProductsTypeormRepository
@@ -88,5 +89,27 @@ describe('ProductsTypeormRepository integrations tests', () => {
     })
   })
 
+  describe('delete', () => {
+    it('should generate an error when the product is not found', async () => {
+      const id = randomUUID()
+      await expect(ormRepository.delete(id)).rejects.toThrow(
+        new NotFoundError(`Product not found using ID ${id}`),
+      )
+    })
+
+    it('should delete a product', async () => {
+      const data = ProductsDataBuilder({})
+      const product = testDataSource.manager.create(Product, data)
+      await testDataSource.manager.save(product)
+ 
+      await ormRepository.delete(data.id)
+
+      const result = await testDataSource.manager.findOneBy(Product, {
+        id: data.id,
+      })
+      
+      expect(result).toBeNull()
+    })
+  })
 
 });
