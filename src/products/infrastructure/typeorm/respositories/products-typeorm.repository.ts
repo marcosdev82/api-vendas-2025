@@ -26,14 +26,14 @@ export class ProductsTypeormRepository implements ProductsRepository {
     return product;
   }
 
-  async findAllByIds(productsIds[]): Promise<ProductModel[]> {
-    const ids = productsIds.map((productId) => productId.id)
+  async findAllByIds(productsIds: { id: string }[]): Promise<ProductModel[]> {
+    const ids = productsIds.map((productId) => productId.id);
 
     const productsFound = await this.productsRepository.find({
-      where: {id: In(ids)}
-    })
+      where: { id: In(ids) }
+    });
 
-    return productsFound
+    return productsFound;
   }
 
   async conflictingName(name: string): Promise<void> {
