@@ -2,9 +2,10 @@ import { SearchInput, SearchOutput } from "@/common/domain/repositories/reposito
 import { ProductModel } from "@/products/domain/models/products.model";
 import { CreateProductProps, ProductId, ProductsRepository } from "@/products/domain/respositories/products.respository";
 import { Product } from "../entities/products.entity";
-import { Repository } from "typeorm";
+import { In, Repository } from "typeorm";
 import { dataSource } from "@/common/infrastructure/typeorm";
 import { NotFoundError } from "@/common/domain/errors/not-found-error";
+import { ConflictError } from "@/common/domain/errors/not-found-conflict-error";
 
 export class ProductsTypeormRepository implements ProductsRepository {
 
@@ -25,12 +26,22 @@ export class ProductsTypeormRepository implements ProductsRepository {
     return product;
   }
 
-  findAllByIds(ids: ProductId[]): Promise<ProductModel[]> {
-    throw new Error("Method not implemented.");
+  async findAllByIds(productsIds[]): Promise<ProductModel[]> {
+    const ids = productsIds.map((productId) => productId.id)
+
+    const productsFound = await this.productsRepository.find({
+      where: {id: In(ids)}
+    })
+
+    return productsFound
   }
 
-  conflictingName(name: string): Promise<void> {
-    throw new Error("Method not implemented.");
+  async conflictingName(name: string): Promise<void> {
+    const product = await this.productsRepository.findOneBy({ name });
+
+    if (product) {
+      throw new ConflictError(`Name already used by another product`);
+    }
   }
 
   create(props: CreateProductProps): ProductModel {
