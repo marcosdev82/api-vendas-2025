@@ -29,8 +29,12 @@ export class ProductsTypeormRepository implements ProductsRepository {
     throw new Error("Method not implemented.");
   }
 
-  conflictingName(name: string): Promise<void> {
-    throw new Error("Method not implemented.");
+  async conflictingName(name: string): Promise<void> {
+    const product = await this.productsRepository.findOneBy({ name });
+
+    if (!product) {
+      throw new NotFoundError(`Name already used by another product`);
+    }
   }
 
   create(props: CreateProductProps): ProductModel {
