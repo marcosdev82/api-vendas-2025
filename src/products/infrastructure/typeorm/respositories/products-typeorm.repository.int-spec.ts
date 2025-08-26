@@ -168,4 +168,27 @@ describe('ProductsTypeormRepository integrations tests', () => {
       expect(result).toHaveLength(1)
     })
   })
+
+  describe('search', () => {
+    it('should  apply only pagination when the other params are null', async () => {
+      const arrange = Array(16).fill(ProductsDataBuilder({}))
+      arrange.map(element => delete element.id)
+      const data = testDataSource.manager.create(Product, arrange)
+      await testDataSource.manager.save(data)
+
+      const result = await ormRepository.search({ 
+        page: 1, 
+        per_page: 15, 
+        filter: null, 
+        sort: null, 
+        sort_dir: null,
+      })
+
+      expect(result.total).toEqual(16)
+      expect(result.items.length).toEqual(15)
+    })
+  })
+
+
+
 });
