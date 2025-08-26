@@ -189,6 +189,4 @@ describe('ProductsTypeormRepository integrations tests', () => {
     })
   })
 
-
-
 });
