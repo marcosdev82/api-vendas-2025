@@ -5,6 +5,7 @@ import { randomUUID } from 'crypto'
 import { ProductsDataBuilder } from '../../in-memory/testing/helpers/products-data-builder'
 import { testDataSource } from '@/common/infrastructure/typeorm/typeorm/testing/data-source'
 import { ConflictError } from '@/common/domain/errors/not-found-conflict-error'
+import { ProductModel } from '@/products/domain/models/products.model'
 
 describe('ProductsTypeormRepository integrations tests', () => {
   let ormRepository: ProductsTypeormRepository
@@ -187,6 +188,13 @@ describe('ProductsTypeormRepository integrations tests', () => {
       expect(result.total).toEqual(16)
       expect(result.items.length).toEqual(15)
     })
+
+    it('should order by created_at DESC when search params are null', async () => {
+      const created_at = new Date()
+      const models: ProductModel[]
+    })
   })
+
+
 
 });
