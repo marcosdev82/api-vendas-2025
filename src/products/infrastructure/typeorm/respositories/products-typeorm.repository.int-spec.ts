@@ -188,13 +188,36 @@ describe('ProductsTypeormRepository integrations tests', () => {
       expect(result.total).toEqual(16)
       expect(result.items.length).toEqual(15)
     })
-
-    it('should order by created_at DESC when search params are null', async () => {
-      const created_at = new Date()
-      const models: ProductModel[]
-    })
   })
 
+  it('should order by created_at DESC when search params are null', async () => {
+      const created_at = new Date()
+      const models: ProductModel[] = []
+      const arrange = Array(16).fill(ProductsDataBuilder({}))
+      
+      arrange.forEach((element, index) => {
+          delete element.id
+          models.push({
+            ...element,
+            name: `Product ${index}`,
+            created_at: new Date(created_at.getTime() + index)
+          })
+      })
 
+      const data = testDataSource.manager.create(Product, models)
+      await testDataSource.manager.save(data)
+
+      const result = await ormRepository.search({ 
+        page: 1, 
+        per_page: 15, 
+        filter: null, 
+        sort: null, 
+        sort_dir: null,
+      })
+
+      expect(result.items[0].name).toEqual('Product 15')
+      expect(result.items[14].name).toEqual('Product 1')
+
+  })
 
 });
