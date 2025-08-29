@@ -86,8 +86,8 @@ export class ProductsTypeormRepository implements ProductsRepository {
         per_page: props.per_page,
         total,
         current_page: props.page,
-        sort: props.sort,
-        sort_dir: props.sort_dir,
+        sort: orderByField,
+        sort_dir: orderByDir,
         filter: props.filter
     }
   }
