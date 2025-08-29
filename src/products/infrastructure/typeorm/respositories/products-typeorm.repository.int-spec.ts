@@ -177,7 +177,7 @@ describe('ProductsTypeormRepository integrations tests', () => {
       const data = testDataSource.manager.create(Product, arrange)
       await testDataSource.manager.save(data)
 
-      const result = await ormRepository.search({ 
+      let result = await ormRepository.search({ 
         page: 1, 
         per_page: 15, 
         filter: null, 
@@ -187,6 +187,7 @@ describe('ProductsTypeormRepository integrations tests', () => {
 
       expect(result.total).toEqual(16)
       expect(result.items.length).toEqual(15)
+      expect(result.sort).toEqual('created_at')
     })
   })
 
@@ -220,4 +221,44 @@ describe('ProductsTypeormRepository integrations tests', () => {
 
   })
 
+  it('should apply paginate and sort', async () => {
+      const created_at = new Date()
+      const models: ProductModel[] = []
+      
+      'badec'.split('').forEach((element, index) => {
+          models.push({
+            ...ProductsDataBuilder({}),
+            name: element,
+            created_at: new Date(created_at.getTime() + index)
+          })
+      })
+
+      const data = testDataSource.manager.create(Product, models)
+      await testDataSource.manager.save(data)
+
+      let result = await ormRepository.search({ 
+        page: 1, 
+        per_page: 2, 
+        filter: null, 
+        sort: 'name', 
+        sort_dir: 'ASC',
+      })
+
+      expect(result.items[0].name).toEqual('a')
+      expect(result.items[1].name).toEqual('b')
+      expect(result.items.length).toEqual(2)
+
+      result = await ormRepository.search({ 
+        page: 1, 
+        per_page: 2, 
+        filter: null, 
+        sort: 'name', 
+        sort_dir: 'DES',
+      })
+
+      expect(result.items[0].name).toEqual('e')
+      expect(result.items[1].name).toEqual('d')
+      expect(result.items.length).toEqual(2)
+
+  })
 });
