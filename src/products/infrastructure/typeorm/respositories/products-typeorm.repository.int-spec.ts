@@ -261,4 +261,44 @@ describe('ProductsTypeormRepository integrations tests', () => {
       expect(result.items.length).toEqual(2)
 
   })
+
+  it('should search using filter, sort and paginate', async () => {
+    const created_at = new Date()
+    const models: ProductModel[] = []
+    const values = ['test', 'a', 'TEST', 'b', 'TeSt']
+    values.forEach((element, index) => {
+      models.push({
+        ...ProductsDataBuilder({}),
+        name: element,
+        created_at: new Date(created_at.getTime() + index),
+      })
+    })
+    const data = testDataSource.manager.create(Product, models)
+    await testDataSource.manager.save(data)
+
+    let result = await ormRepository.search({
+      page: 1,
+      per_page: 2,
+      sort: 'name',
+      sort_dir: 'ASC',
+      filter: 'TEST',
+    })
+
+    expect(result.items[0].name).toEqual('test')
+    expect(result.items[1].name).toEqual('TeSt')
+    expect(result.items.length).toEqual(2)
+    expect(result.total).toEqual(3)
+
+    result = await ormRepository.search({
+      page: 2,
+      per_page: 2,
+      sort: 'name',
+      sort_dir: 'ASC',
+      filter: 'TEST',
+    })
+
+    expect(result.items[0].name).toEqual('TEST')
+    expect(result.items.length).toEqual(1)
+    expect(result.total).toEqual(3)
+  })
 });
