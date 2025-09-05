@@ -24,7 +24,7 @@ export abstract class InMemoryRepository<Model extends ModelProps>
   create(props: CreateProps): Model {
     const model = {
       id: randomUUID(),
-      create_at: new Date(),
+      created_at: new Date(),
       updated_at: new Date(),
       ...props,
     }
