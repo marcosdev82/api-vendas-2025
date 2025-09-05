@@ -2,10 +2,11 @@ import { ProductsTypeormRepository } from './products-typeorm.repository'
 import { Product } from '../entities/products.entity'
 import { NotFoundError } from '@/common/domain/errors/not-found-error'
 import { randomUUID } from 'crypto'
-import { ProductsDataBuilder } from '../../in-memory/testing/helpers/products-data-builder'
+import { ProductDataBuilder } from '../../in-memory/testing/helpers/products-data-builder'
 import { testDataSource } from '@/common/infrastructure/typeorm/typeorm/testing/data-source'
 import { ConflictError } from '@/common/domain/errors/not-found-conflict-error'
 import { ProductModel } from '@/products/domain/models/products.model'
+
 
 describe('ProductsTypeormRepository integrations tests', () => {
   let ormRepository: ProductsTypeormRepository
@@ -45,7 +46,7 @@ describe('ProductsTypeormRepository integrations tests', () => {
     })
 
     it('should finds a product by id', async () => {
-      const data = ProductsDataBuilder({})
+      const data = ProductDataBuilder({})
       const product = testDataSource.manager.create(Product, data)
       await testDataSource.manager.save(product)
 
@@ -57,7 +58,7 @@ describe('ProductsTypeormRepository integrations tests', () => {
 
   describe('create', () => {
     it('should create a new product object', async () => {
-      const data = ProductsDataBuilder({ name: 'Product 1'})
+      const data = ProductDataBuilder({ name: 'Product 1'})
       const result = ormRepository.create(data)
       expect(result.name).toEqual(data.name)
     })
@@ -65,7 +66,7 @@ describe('ProductsTypeormRepository integrations tests', () => {
 
   describe('insert', () => {
     it('should insert a new product', async () => {
-      const data = ProductsDataBuilder({ name: 'Product 1'})
+      const data = ProductDataBuilder({ name: 'Product 1'})
       const result = await ormRepository.insert(data)
       expect(result.name).toEqual(data.name)
     })
@@ -73,14 +74,14 @@ describe('ProductsTypeormRepository integrations tests', () => {
 
   describe('update', () => {
     it('should generate an error when the product is not found', async () => {
-      const data = ProductsDataBuilder({})
+      const data = ProductDataBuilder({})
       await expect(ormRepository.update(data)).rejects.toThrow(
         new NotFoundError(`Product not found using ID ${data.id}`),
       )
     })
 
     it('should update a product', async () => {
-      const data = ProductsDataBuilder({})
+      const data = ProductDataBuilder({})
       const product = testDataSource.manager.create(Product, data)
       await testDataSource.manager.save(product)
       product.name = 'Nome atualizado'
@@ -99,7 +100,7 @@ describe('ProductsTypeormRepository integrations tests', () => {
     })
 
     it('should delete a product', async () => {
-      const data = ProductsDataBuilder({})
+      const data = ProductDataBuilder({})
       const product = testDataSource.manager.create(Product, data)
       await testDataSource.manager.save(product)
       await ormRepository.delete(data.id)
@@ -122,7 +123,7 @@ describe('ProductsTypeormRepository integrations tests', () => {
     })
 
     it('should finds a product by name', async () => {
-      const data = ProductsDataBuilder({ name: 'Product 1'})
+      const data = ProductDataBuilder({ name: 'Product 1'})
       const product = testDataSource.manager.create(Product, data)
       await testDataSource.manager.save(product)
 
@@ -133,7 +134,7 @@ describe('ProductsTypeormRepository integrations tests', () => {
 
   describe('conflictingName', () => {
     it('should generate an error when the product found', async () => {
-      const data = ProductsDataBuilder({ name: 'Product 1'})
+      const data = ProductDataBuilder({ name: 'Product 1'})
       const product = testDataSource.manager.create(Product, data)
       await testDataSource.manager.save(product)
 
@@ -161,7 +162,7 @@ describe('ProductsTypeormRepository integrations tests', () => {
         { id: randomUUID() },
       ]
 
-      const data = ProductsDataBuilder({ id: productsIds[0].id })
+      const data = ProductDataBuilder({ id: productsIds[0].id })
       const product = testDataSource.manager.create(Product, data)
       await testDataSource.manager.save(product)
 
@@ -172,7 +173,7 @@ describe('ProductsTypeormRepository integrations tests', () => {
 
   describe('search', () => {
     it('should  apply only pagination when the other params are null', async () => {
-      const arrange = Array(16).fill(ProductsDataBuilder({}))
+      const arrange = Array(16).fill(ProductDataBuilder({}))
       arrange.map(element => delete element.id)
       const data = testDataSource.manager.create(Product, arrange)
       await testDataSource.manager.save(data)
@@ -194,7 +195,7 @@ describe('ProductsTypeormRepository integrations tests', () => {
   it('should order by created_at DESC when search params are null', async () => {
       const created_at = new Date()
       const models: ProductModel[] = []
-      const arrange = Array(16).fill(ProductsDataBuilder({}))
+      const arrange = Array(16).fill(ProductDataBuilder({}))
       
       arrange.forEach((element, index) => {
           delete element.id
@@ -227,7 +228,7 @@ describe('ProductsTypeormRepository integrations tests', () => {
       
       'badec'.split('').forEach((element, index) => {
           models.push({
-            ...ProductsDataBuilder({}),
+            ...ProductDataBuilder({}),
             name: element,
             created_at: new Date(created_at.getTime() + index)
           })
@@ -268,7 +269,7 @@ describe('ProductsTypeormRepository integrations tests', () => {
     const values = ['test', 'a', 'TEST', 'b', 'TeSt']
     values.forEach((element, index) => {
       models.push({
-        ...ProductsDataBuilder({}),
+        ...ProductDataBuilder({}),
         name: element,
         created_at: new Date(created_at.getTime() + index),
       })
