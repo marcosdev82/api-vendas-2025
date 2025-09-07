@@ -22,24 +22,23 @@ export namespace CreateProductUseCase {
     constructor(private productsRepository: ProductsRepository) {}
 
     async execute(input: Input): Promise<Output> {
-        if (!input.name || input.price <= 0 || input.quantity <= 0) {
-            throw new BadRequestError("Input data not provided or invalid");
-        }
+      if (!input.name || input.price <= 0 || input.quantity <= 0) {
+          throw new BadRequestError("Input data not provided or invalid");
+      }
 
-        await this.productsRepository.conflictingName(input.name);
+      await this.productsRepository.conflictingName(input.name);
 
-        const product = this.productsRepository.create(input);
-        await this.productsRepository.insert(product);
+      const product = this.productsRepository.create(input);
+      await this.productsRepository.insert(product);
 
-        return {
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            quantity: product.quantity,
-            created_at: product.created_at,
-            updated_at: product.updated_at
-        };
+      return {
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          quantity: product.quantity,
+          created_at: product.created_at,
+          updated_at: product.updated_at
+      };
     }
-
   }
 }
