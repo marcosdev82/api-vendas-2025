@@ -20,7 +20,7 @@ const options = {
       },
     ],
   },
-  apis: [],
+  apis: ['./src/**/http/routes/*.ts'],
 }
 const swaggerSpec = sweggerJSDoc(options)
 
