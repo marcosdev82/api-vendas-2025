@@ -1,5 +1,5 @@
 import { ProductModel } from '@/products/domain/models/products.model';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity('products')
 export class Product implements ProductModel {
@@ -9,15 +9,18 @@ export class Product implements ProductModel {
   @Column('varchar')
   name: string;
 
-  @Column('decimal')
+  @Column('decimal', { transformer: {
+    to: (value: number) => value,
+    from: (value: string) => parseFloat(value)
+  }})
   price: number;
 
   @Column('int')
   quantity: number;
 
-  @Column({name: 'created_at'})
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
 
-  @Column({name: 'updated_at'})
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
   updated_at: Date;
 }
