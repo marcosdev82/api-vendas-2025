@@ -8,16 +8,15 @@ import { ConflictError } from '@/common/domain/errors/not-found-conflict-error'
 import { ProductModel } from '@/products/domain/models/products.model'
 
 
+
 describe('ProductsTypeormRepository integrations tests', () => {
   let ormRepository: ProductsTypeormRepository
+  let typeOrmEntityManager: any
 
   beforeAll(async () => {
-    try {
-      if (!testDataSource.isInitialized) {
-        await testDataSource.initialize()
-      }
-    } catch (err) {
-      console.error('Erro ao inicializar o banco:', err)
+    if (!testDataSource.isInitialized) {
+      await testDataSource.initialize()
+      typeOrmEntityManager = testDataSource.createEntityManager()
     }
   })
 
@@ -33,8 +32,10 @@ describe('ProductsTypeormRepository integrations tests', () => {
     }
 
     await testDataSource.manager.query('DELETE FROM products')
-    ormRepository = new ProductsTypeormRepository()
-    ormRepository.productsRepository = testDataSource.getRepository(Product)
+
+    ormRepository = new ProductsTypeormRepository(typeOrmEntityManager.getRepository('Product'))
+
+  
   })
 
   describe('findById', () => {

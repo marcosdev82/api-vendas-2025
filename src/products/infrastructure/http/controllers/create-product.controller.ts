@@ -30,8 +30,6 @@ export async function createProductController(
 
   const { name, price, quantity } = validatedData.data
 
-  const repository: ProductsTypeormRepository = container.resolve('ProductRepository')
-  repository.productsRepository = dataSource.getRepository(Product)
   const createProductUseCase: CreateProductUseCase.UseCase = container.resolve('CreateProductUseCase')
 
   const product = await createProductUseCase.execute({ name, price, quantity })
