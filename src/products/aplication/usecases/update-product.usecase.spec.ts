@@ -3,6 +3,8 @@ import { ProductsRepository } from "@/products/domain/respositories/products.res
 import { UpdateProductUseCase } from "./update-product.usecase"
 import { ProductsInMemoryRepository } from '@/products/infrastructure/in-memory/repositories/products-in-memory.repository'
 import { NotFoundError } from '@/common/domain/errors/not-found-error'
+import { ProductDataBuilder } from '@/products/infrastructure/in-memory/testing/helpers/products-data-builder'
+import { ConflictError } from '@/common/domain/errors/not-found-conflict-error'
 
 
 describe('UpdateProductUseCase Unit Tests', () => {
@@ -19,6 +21,31 @@ describe('UpdateProductUseCase Unit Tests', () => {
       await expect(sut.execute({id: 'fake-id' })).rejects.toBeInstanceOf(
         NotFoundError,
       )
+  })
+
+  it('should not be possible to register a product with the name of another product', async () => {
+
+    const product1 = repository.create(ProductDataBuilder({ name: 'Product 1' }))
+    await repository.insert(product1)
+
+    const props = {
+      name: 'Product 2',
+      price: 10,
+      quantity: 5
+    }
+
+    const model = repository.create(props)
+    await repository.insert(model)
+
+
+    const newData = {
+      id: model.id,
+      name: 'New name',
+      price: 500,
+      quantity: 20
+    }
+
+    await expect(sut.execute(newData)).rejects.toBeInstanceOf(ConflictError)
   })
 
   it('should be able to update a product', async () => {
