@@ -16,7 +16,7 @@ export namespace getProductUseCase {
     constructor(
       @inject('ProductRepository')
       private productsRepository: ProductsRepository,
-    ) {}
+    ) {} 
 
     async execute(input: Input): Promise<Output> {
 
