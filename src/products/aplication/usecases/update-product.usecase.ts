@@ -25,6 +25,10 @@ export namespace UpdateProductUseCase {
       const product = await this.productsRepository.findById(input.id);
 
       if (input.name){
+        if (product.name !== input.name){
+          await this.productsRepository.conflictingName(input.name)
+        }
+
         product.name = input.name
       }
 
