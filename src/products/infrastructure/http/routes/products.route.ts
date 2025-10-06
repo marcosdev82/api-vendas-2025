@@ -103,7 +103,6 @@ productsRouter.post('/', createProductController)
  *       404:
  *         description: The product was not found
  */
-
 productsRouter.get('/:id', getProductController)
 
 /**
@@ -139,9 +138,27 @@ productsRouter.get('/:id', getProductController)
  *       409:
  *         description: Name already used on another product
  */
-
 productsRouter.put('/:id', updateProductController)
 
+/**
+ * @swagger
+ * /products/{id}:
+ *   delete:
+ *     summary: Delete a product by ID
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The product ID
+ *     responses:
+ *       204:
+ *         description: The product was successfully deleted
+ *       404:
+ *         description: The product was not found
+ */
 productsRouter.put('/:id', deleteProductController)
 
 export { productsRouter }

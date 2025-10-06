@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import express from 'express';
+import 'express-async-errors';
 import cors from  'cors';
 import { routes } from './routes';
 import { errorHandle } from './middleware/errorHandlers';
