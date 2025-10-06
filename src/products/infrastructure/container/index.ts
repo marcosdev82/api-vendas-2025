@@ -11,7 +11,7 @@ container.registerSingleton('ProductRepository', ProductsTypeormRepository);
 container.registerSingleton('CreateProductUseCase', CreateProductUseCase.UseCase);
 
 container.registerInstance(
-  'ProductsDefaultTypeormRepository',
+'ProductsDefaultTypeormRepository',
   dataSource.getRepository(Product)
 ) 
 
