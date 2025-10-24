@@ -1,6 +1,6 @@
 import 'reflect-metadata'
 import { ProductsInMemoryRepository } from '@/products/infrastructure/in-memory/repositories/products-in-memory.repository'
-import { ProductsDataBuilder } from '@/products/infrastructure/testing/helpers/products-data-builder'
+import { ProductsDataBuilder } from '@/products/infrastructure/in-memory/testing/helpers/products-data-builder'
 import { SearchProductUseCase } from './search-product.usecase'
 
 describe('SearchProductUseCase Unit Tests', () => {

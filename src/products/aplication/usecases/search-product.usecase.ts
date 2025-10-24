@@ -4,7 +4,7 @@ import { ProductsRepository } from '@/products/domain/respositories/products.res
 import { PaginationOutputDto, PaginationOutputMapper } from '../dtos/pagination-output.dto';
 import { ProductModel } from '@/products/domain/models/products.model';
 
-export namespace SerachProductUserCase {
+export namespace SearchProductUseCase {
   export type Input = SearchInputDto;
 
   export type output = PaginationOutputDto<ProductModel>;
