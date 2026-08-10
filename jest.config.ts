@@ -14,4 +14,5 @@ export default {
   coverageDirectory: '../coverage',
   testEnvironment: 'node',
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
+  testPathIgnorePatterns: ['<rootDir>/api-vendas-2025/'],
 }

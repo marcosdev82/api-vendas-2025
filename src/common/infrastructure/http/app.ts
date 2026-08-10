@@ -10,6 +10,11 @@ import  sweggerUI from 'swagger-ui-express';
 import { swaggerAuthMiddleware } from './swagger-auth';
 import { jwtAuthMiddleware } from './jwt-auth';
 import jwt from 'jsonwebtoken';
+import { comparePassword } from '../auth/password';
+import { dataSource } from '../typeorm';
+import { User } from '@/users/infrastructure/typeorm/entities/users.entity';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 
 const swaggerServers = [
   {
@@ -41,21 +46,51 @@ const options = {
 const swaggerSpec = sweggerJSDoc(options)
 
 const app = express();
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+})
 
+app.use(helmet());
+app.use(limiter);
 app.use(cors());
 app.use(express.json());
+app.get('/health', async (_req, res) => {
+  if (!dataSource.isInitialized) {
+    return res.status(503).json({ status: 'error', service: 'api', database: 'disconnected' })
+  }
+
+  try {
+    await dataSource.query('SELECT 1')
+    return res.status(200).json({ status: 'ok', service: 'api', database: 'connected' })
+  } catch {
+    return res.status(503).json({ status: 'error', service: 'api', database: 'disconnected' })
+  }
+})
 app.use('/docs', swaggerAuthMiddleware, sweggerUI.serve, sweggerUI.setup(swaggerSpec))
 
-app.post('/auth/login', (req, res) => {
+app.post('/auth/login', async (req, res) => {
   const { username, password } = req.body ?? {}
-  const expectedUser = process.env.AUTH_USER ?? process.env.SWAGGER_USER ?? 'admin'
-  const expectedPass = process.env.AUTH_PASS ?? process.env.SWAGGER_PASS ?? 'admin123'
 
-  if (username !== expectedUser || password !== expectedPass) {
+  if (!username || !password) {
     return res.status(401).json({ status: 'error', message: 'Invalid credentials' })
   }
 
-  const token = jwt.sign({ sub: username, role: 'admin' }, process.env.JWT_SECRET ?? 'dev-secret', {
+  const userRepository = dataSource.getRepository(User)
+  const user = await userRepository.findOneBy({ email: username })
+
+  if (!user) {
+    return res.status(401).json({ status: 'error', message: 'Invalid credentials' })
+  }
+
+  const validPassword = await comparePassword(password, user.password)
+  if (!validPassword) {
+    return res.status(401).json({ status: 'error', message: 'Invalid credentials' })
+  }
+
+  const token = jwt.sign({ sub: user.id, role: 'admin', email: user.email }, process.env.JWT_SECRET ?? 'dev-secret', {
     expiresIn: '8h',
   })
 

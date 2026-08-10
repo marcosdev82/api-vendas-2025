@@ -18,3 +18,5 @@ export function ProductDataBuilder(props: Partial<ProductModel>): ProductModel {
     updated_at: props.updated_at ?? new Date(),
   }
 }
+
+export const ProductsDataBuilder = ProductDataBuilder

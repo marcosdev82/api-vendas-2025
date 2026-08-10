@@ -2,6 +2,7 @@ import { BadRequestError } from '@/common/domain/errors/bad-request-error'
 import { ConflictError } from '@/common/domain/errors/not-found-conflict-error'
 import { inject, injectable } from 'tsyringe'
 import { UsersRepository } from '@/users/domain/repositories/users.repository'
+import { hashPassword } from '@/common/infrastructure/auth/password'
 
 export namespace CreateUserUseCase {
   export type Input = {
@@ -33,7 +34,8 @@ export namespace CreateUserUseCase {
 
       await this.usersRepository.conflictingEmail(input.email)
 
-      const user = this.usersRepository.create(input)
+      const hashedPassword = await hashPassword(input.password)
+      const user = this.usersRepository.create({ ...input, password: hashedPassword })
       return this.usersRepository.insert(user)
     }
   }

@@ -44,7 +44,7 @@ describe('UpdateProductUseCase Unit Tests', () => {
 
     const newData = {
       id: model.id,
-      name: 'New name',
+      name: 'Product 1',
       price: 500,
       quantity: 20
     }
