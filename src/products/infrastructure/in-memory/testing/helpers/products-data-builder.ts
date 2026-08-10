@@ -14,3 +14,5 @@ export function ProductsDataBuilder(
     updated_at: props.updated_at ?? new Date(),
   }
 }
+
+export const ProductDataBuilder = ProductsDataBuilder

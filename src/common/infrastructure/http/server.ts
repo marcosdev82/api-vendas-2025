@@ -1,3 +1,4 @@
+import 'reflect-metadata'
 import { env } from '../env'
 import { dataSource } from '../typeorm'
 import { app } from './app'
