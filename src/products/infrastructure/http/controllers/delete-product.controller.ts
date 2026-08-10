@@ -3,6 +3,7 @@ import { z } from "zod";
 import { DeleteProductUseCase } from "@/products/aplication/usecases/delete-product.usecase";
 import { container } from "tsyringe";
 import { dataValidation } from "@/common/infrastructure/validation/zod";
+import { invalidateCacheForResource } from '@/common/infrastructure/cache/cache-invalidation'
 
 export async function deleteProductController(
   request: Request,
@@ -17,6 +18,7 @@ export async function deleteProductController(
   const deleteProductUseCase: DeleteProductUseCase.UseCase = container.resolve('DeleteProductUseCase')
 
   const product = await deleteProductUseCase.execute({ id })
+  await invalidateCacheForResource('products')
 
   return response.status(204).json(product)
 }

@@ -4,6 +4,7 @@ import { z } from "zod";
 import { container } from "tsyringe";
 import { dataValidation } from "@/common/infrastructure/validation/zod";
 import { UpdateProductUseCase } from "@/products/aplication/usecases/update-product.usecase";
+import { invalidateCacheForResource } from '@/common/infrastructure/cache/cache-invalidation'
 
 export async function updateProductController(
   request: Request,
@@ -32,6 +33,7 @@ export async function updateProductController(
   const updateProductUseCase: UpdateProductUseCase.UseCase = container.resolve('UpdateProductUseCase')
 
   const product = await updateProductUseCase.execute({ id, sku, name, description, price, cost_price, quantity, category, is_active, image_url })
+  await invalidateCacheForResource('products')
 
   return response.status(200).json(product)
 }

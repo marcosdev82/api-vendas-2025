@@ -4,6 +4,7 @@ import { z } from "zod";
 import { CreateProductUseCase } from "@/products/aplication/usecases/create-product.usecase";
 import { container } from "tsyringe";
 import { dataValidation } from "@/common/infrastructure/validation/zod";
+import { invalidateCacheForResource } from '@/common/infrastructure/cache/cache-invalidation'
 
 export async function createProductController(
   request: Request,
@@ -26,6 +27,7 @@ export async function createProductController(
   const createProductUseCase: CreateProductUseCase.UseCase = container.resolve('CreateProductUseCase')
 
   const product = await createProductUseCase.execute({ sku, name, description, price, cost_price, quantity, category, is_active, image_url })
+  await invalidateCacheForResource('products')
 
   return response.status(201).json(product)
 }

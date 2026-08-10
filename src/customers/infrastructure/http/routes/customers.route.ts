@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { createCustomerController } from '../controllers/create-customer.controller'
 import { getCustomerController } from '../controllers/get-customer.controller'
 import { listCustomerController } from '../controllers/list-customer.controller'
+import { cacheMiddleware } from '@/common/infrastructure/cache/cache-middleware'
 
 const customersRouter = Router()
 
@@ -70,7 +71,7 @@ customersRouter.post('/', createCustomerController)
  *       200:
  *         description: Customers list
  */
-customersRouter.get('/', listCustomerController)
+customersRouter.get('/', cacheMiddleware(120), listCustomerController)
 
 /**
  * @swagger
@@ -88,6 +89,6 @@ customersRouter.get('/', listCustomerController)
  *       200:
  *         description: Customer details
  */
-customersRouter.get('/:id', getCustomerController)
+customersRouter.get('/:id', cacheMiddleware(120), getCustomerController)
 
 export { customersRouter }
