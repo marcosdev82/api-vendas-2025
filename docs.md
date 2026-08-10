@@ -20,3 +20,23 @@ npm install swagger-ui-express swagger-jsdoc
 
 npm install -D @types/swagger-ui-express @types/swagger-jsdoc
 ```
+
+## Proteção do Swagger e da API
+
+A documentação do Swagger agora está protegida por autenticação básica. Para acessá-la, é necessário informar usuário e senha configurados nas variáveis de ambiente `SWAGGER_USER` e `SWAGGER_PASS`.
+
+Os endpoints da API, por sua vez, exigem um token JWT no header `Authorization`:
+
+```http
+Authorization: Bearer <seu-token-jwt>
+```
+
+Para gerar um token de teste, faça uma requisição para o endpoint de login:
+
+```bash
+curl -X POST http://localhost:3333/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin123"}'
+```
+
+Depois de obter o token, utilize-o nas chamadas à API para acessar os endpoints protegidos.
