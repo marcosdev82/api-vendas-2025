@@ -7,6 +7,9 @@
     "lint": "eslint .",
     "test": "npx dotenv-cli -e .env.test -- jest --runInBand",
     "typeorm": "ts-node-dev -r tsconfig-paths/register --transpile-only ./node_modules/typeorm/cli.js",
+    "docker:up": "docker compose up --build -d",
+    "docker:down": "docker compose down -v",
+    "docker:logs": "docker compose logs -f",
     "pretest:int": "docker run --name testsdb -e POSTGRES_PASSWORD=postgres -p 5433:5432 -d postgres",
     "test:int": "wait-port -t 5000 localhost:5433 && npx dotenv-cli -e .env.test -- jest --runInBand --config ./jest.int.config.ts",
     "posttest:int": "docker stop testsdb && docker rm testsdb"
@@ -20,6 +23,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-async-errors": "^3.1.1",
+    "mysql2": "^3.11.0",
     "pg": "^8.12.0",
     "reflect-metadata": "^0.2.2",
     "swagger-jsdoc": "^6.2.8",
