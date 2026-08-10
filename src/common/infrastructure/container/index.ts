@@ -1,2 +1,5 @@
 import '@/products/infrastructure/container'
 import '@/sales/infrastructure/container'
+import '@/users/infrastructure/container'
+import '@/customers/infrastructure/container'
+import '@/cart/infrastructure/container'

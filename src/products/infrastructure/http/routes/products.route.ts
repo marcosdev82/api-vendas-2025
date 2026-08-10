@@ -13,22 +13,44 @@ const productsRouter = Router()
  *     Product:
  *       type: object
  *       required:
+ *         - sku
  *         - name
+ *         - description
  *         - price
+ *         - cost_price
  *         - quantity
+ *         - category
  *       properties:
  *         id:
  *           type: string
  *           description: The auto-generated id (uuid) of the product
+ *         sku:
+ *           type: string
+ *           description: The unique SKU of the product
  *         name:
  *           type: string
  *           description: The name of the product
+ *         description:
+ *           type: string
+ *           description: The product description shown in the catalog
  *         price:
  *           type: number
- *           description: The price of the product
+ *           description: The selling price of the product
+ *         cost_price:
+ *           type: number
+ *           description: The cost price used by the business
  *         quantity:
  *           type: number
- *           description: The quantity of the product
+ *           description: The available stock quantity
+ *         category:
+ *           type: string
+ *           description: The product category
+ *         is_active:
+ *           type: boolean
+ *           description: Whether the product is visible in the catalog
+ *         image_url:
+ *           type: string
+ *           description: URL for the product image
  *         created_at:
  *           type: string
  *           format: date-time
@@ -39,9 +61,15 @@ const productsRouter = Router()
  *           description: The date the product was last updated
  *       example:
  *         id: 06db518e-613b-4a76-8e4f-2e305fe4f68d
- *         name: Sample Product
- *         price: 29.99
- *         quantity: 100
+ *         sku: SKU-1001
+ *         name: Smart Headphones
+ *         description: Noise-cancelling wireless headphones
+ *         price: 299.99
+ *         cost_price: 180.5
+ *         quantity: 120
+ *         category: Electronics
+ *         is_active: true
+ *         image_url: https://example.com/images/headphones.png
  *         created_at: 2023-01-01T10:00:00Z
  *         updated_at: 2023-01-01T10:00:00Z
  */

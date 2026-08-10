@@ -10,12 +10,18 @@ export async function updateProductController(
   response: Response,
 ) {
   const createProductBodySchema = z.object({
-    name: z.string().optional(),
-    price: z.number().optional(),
+    sku: z.string().min(1).optional(),
+    name: z.string().min(1).optional(),
+    description: z.string().min(1).optional(),
+    price: z.number().positive().optional(),
+    cost_price: z.number().min(0).optional(),
     quantity: z.number().min(0).optional(),
+    category: z.string().min(1).optional(),
+    is_active: z.boolean().optional(),
+    image_url: z.string().url().nullable().optional(),
   })
  
-  const { name, price, quantity } = dataValidation(createProductBodySchema, request.body)
+  const { sku, name, description, price, cost_price, quantity, category, is_active, image_url } = dataValidation(createProductBodySchema, request.body)
 
   const updateProductParamSchema = z.object({
     id: z.string().uuid(),
@@ -25,7 +31,7 @@ export async function updateProductController(
 
   const updateProductUseCase: UpdateProductUseCase.UseCase = container.resolve('UpdateProductUseCase')
 
-  const product = await updateProductUseCase.execute({ id, name, price, quantity })
+  const product = await updateProductUseCase.execute({ id, sku, name, description, price, cost_price, quantity, category, is_active, image_url })
 
   return response.status(200).json(product)
 }

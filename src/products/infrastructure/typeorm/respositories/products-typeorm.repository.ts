@@ -10,7 +10,7 @@ import { inject, injectable } from "tsyringe";
 @injectable()
 export class ProductsTypeormRepository implements ProductsRepository {
 
-  sortableFields: string[] = ["name", "created_at"]; 
+  sortableFields: string[] = ['name', 'price', 'created_at'];
 
   constructor(
     @inject('ProductsDefaultTypeormRepository')
@@ -76,7 +76,7 @@ export class ProductsTypeormRepository implements ProductsRepository {
     const orderByDir = validSortDir ? props.sort_dir : 'desc'
 
     const [products, total] = await this.productsRepository.findAndCount({
-      ...(props.filter && {where: { name: ILike(props.filter)}}),
+      ...(props.filter && {where: [{ name: ILike(`%${props.filter}%`) }, { sku: ILike(`%${props.filter}%`) }, { category: ILike(`%${props.filter}%`) }] }),
       order: {[orderByField]: orderByDir},
       skip: (props.page - 1) * props.per_page,
       take: props.per_page

@@ -29,9 +29,13 @@ describe('UpdateProductUseCase Unit Tests', () => {
     await repository.insert(product1)
 
     const props = {
+      sku: 'SKU-100',
       name: 'Product 2',
+      description: 'A realistic product description',
       price: 10,
-      quantity: 5
+      cost_price: 6,
+      quantity: 5,
+      category: 'Electronics',
     }
 
     const model = repository.create(props)
@@ -51,9 +55,13 @@ describe('UpdateProductUseCase Unit Tests', () => {
   it('should be able to update a product', async () => {
       const spyUpdate = jest.spyOn(repository, 'update')
       const props = {
+        sku: 'SKU-101',
         name: 'Product 1',
+        description: 'A realistic product description',
         price: 10,
-        quantity: 5
+        cost_price: 6,
+        quantity: 5,
+        category: 'Electronics',
       }
 
       const model = repository.create(props)

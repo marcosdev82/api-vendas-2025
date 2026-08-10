@@ -1,6 +1,6 @@
 import 'reflect-metadata'
 import { ProductsInMemoryRepository } from '@/products/infrastructure/in-memory/repositories/products-in-memory.repository'
-import { ProductsDataBuilder } from '@/products/infrastructure/in-memory/testing/helpers/products-data-builder'
+import { ProductDataBuilder } from '@/products/infrastructure/in-memory/testing/helpers/products-data-builder'
 import { SearchProductUseCase } from './search-product.usecase'
 
 describe('SearchProductUseCase Unit Tests', () => {
@@ -15,14 +15,14 @@ describe('SearchProductUseCase Unit Tests', () => {
   test('should return the products ordered by created_at', async () => {
     const created_at = new Date()
     const items = [
-      { ...ProductsDataBuilder({}) },
+      { ...ProductDataBuilder({}) },
       {
-        ...ProductsDataBuilder({
+        ...ProductDataBuilder({
           created_at: new Date(created_at.getTime() + 100),
         }),
       },
       {
-        ...ProductsDataBuilder({
+        ...ProductDataBuilder({
           created_at: new Date(created_at.getTime() + 200),
         }),
       },
@@ -42,11 +42,11 @@ describe('SearchProductUseCase Unit Tests', () => {
 
   test('should return output using pagination, sort and filter', async () => {
     const items = [
-      { ...ProductsDataBuilder({ name: 'a' }) },
-      { ...ProductsDataBuilder({ name: 'AA' }) },
-      { ...ProductsDataBuilder({ name: 'Aa' }) },
-      { ...ProductsDataBuilder({ name: 'b' }) },
-      { ...ProductsDataBuilder({ name: 'c' }) },
+      { ...ProductDataBuilder({ name: 'a' }) },
+      { ...ProductDataBuilder({ name: 'AA' }) },
+      { ...ProductDataBuilder({ name: 'Aa' }) },
+      { ...ProductDataBuilder({ name: 'b' }) },
+      { ...ProductDataBuilder({ name: 'c' }) },
     ]
     repository.items = items
 

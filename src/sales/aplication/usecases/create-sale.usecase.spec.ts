@@ -1,6 +1,6 @@
 import { BadRequestError } from '@/common/domain/errors/bad-request-error'
 import { ProductsInMemoryRepository } from '@/products/infrastructure/in-memory/repositories/products-in-memory.repository'
-import { ProductsDataBuilder } from '@/products/infrastructure/in-memory/testing/helpers/products-data-builder'
+import { ProductDataBuilder } from '@/products/infrastructure/in-memory/testing/helpers/products-data-builder'
 import { CreateSaleUseCase } from './create-sale.usecase'
 import { SalesInMemoryRepository } from '@/sales/infrastructure/in-memory/repositories/sales-in-memory.repository'
 
@@ -11,7 +11,7 @@ describe('CreateSaleUseCase Unit Tests', () => {
     const sut = new CreateSaleUseCase.UseCase(productRepository, salesRepository)
 
     const product = await productRepository.insert(
-      ProductsDataBuilder({ name: 'Keyboard', price: 100, quantity: 5 }),
+      ProductDataBuilder({ name: 'Keyboard', price: 100, quantity: 5 }),
     )
 
     const result = await sut.execute({
@@ -33,7 +33,7 @@ describe('CreateSaleUseCase Unit Tests', () => {
     const sut = new CreateSaleUseCase.UseCase(productRepository, salesRepository)
 
     const product = await productRepository.insert(
-      ProductsDataBuilder({ name: 'Mouse', price: 50, quantity: 1 }),
+      ProductDataBuilder({ name: 'Mouse', price: 50, quantity: 1 }),
     )
 
     await expect(

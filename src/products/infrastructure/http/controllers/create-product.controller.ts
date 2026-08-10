@@ -10,16 +10,22 @@ export async function createProductController(
   response: Response,
 ) {
   const createProductBodySchema = z.object({
-    name: z.string(),
-    price: z.number(),
-    quantity: z.number(),
+    sku: z.string().min(1),
+    name: z.string().min(1),
+    description: z.string().min(1),
+    price: z.number().positive(),
+    cost_price: z.number().min(0),
+    quantity: z.number().min(0),
+    category: z.string().min(1),
+    is_active: z.boolean().optional(),
+    image_url: z.string().url().nullable().optional(),
   })
  
-  const { name, price, quantity } = dataValidation(createProductBodySchema, request.body)
+  const { sku, name, description, price, cost_price, quantity, category, is_active, image_url } = dataValidation(createProductBodySchema, request.body)
 
   const createProductUseCase: CreateProductUseCase.UseCase = container.resolve('CreateProductUseCase')
 
-  const product = await createProductUseCase.execute({ name, price, quantity })
+  const product = await createProductUseCase.execute({ sku, name, description, price, cost_price, quantity, category, is_active, image_url })
 
   return response.status(201).json(product)
 }
