@@ -16,6 +16,7 @@ import { User } from '@/users/infrastructure/typeorm/entities/users.entity';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { requestLoggerMiddleware } from './middleware/request-logger';
+import { cacheMiddleware } from '../cache/cache-middleware';
 
 const swaggerServers = [
   {
@@ -57,6 +58,7 @@ const limiter = rateLimit({
 app.use(helmet());
 app.use(limiter);
 app.use(requestLoggerMiddleware);
+app.use(cacheMiddleware(60));
 app.use(cors());
 app.use(express.json());
 app.get('/health', async (_req, res) => {
