@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { container } from 'tsyringe'
 import { dataValidation } from '@/common/infrastructure/validation/zod'
 import { CreateCustomerUseCase } from '@/customers/aplication/usecases/create-customer.usecase'
+import { invalidateCacheForResource } from '@/common/infrastructure/cache/cache-invalidation'
 
 export async function createCustomerController(request: Request, response: Response) {
   const schema = z.object({
@@ -15,6 +16,7 @@ export async function createCustomerController(request: Request, response: Respo
   const { name, email, phone, document } = dataValidation(schema, request.body)
   const useCase: CreateCustomerUseCase.UseCase = container.resolve('CreateCustomerUseCase')
   const customer = await useCase.execute({ name, email, phone, document })
+  await invalidateCacheForResource('customers')
 
   return response.status(201).json(customer)
 }

@@ -35,6 +35,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run lint
+        run: npm run lint
+
       - name: Run typecheck
         run: npx tsc --noEmit
 
@@ -49,3 +52,5 @@ jobs:
           JWT_SECRET: ci-secret
           SWAGGER_USER: admin
           SWAGGER_PASS: admin123
+          REDIS_URL: redis://localhost:6379
+          PORT: 3333
