@@ -1,8 +1,3 @@
-<p align="center">
-  <a href="https://aluiziodeveloper.com.br/">
-    <img alt="Conex Networks" src="https://aluiziodeveloper.com.br/assets/img/icon.png" width="200" />
-  </a>
-</p>
 <h2 align="center">
 Cursos, mini-cursos, dicas, tutoriais e muito mais.
 </h2>
