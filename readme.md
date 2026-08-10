@@ -1,70 +1,159 @@
-<h2 align="center">
-Cursos, mini-cursos, dicas, tutoriais e muito mais.
-</h2>
+# API de Vendas
 
-## Curso: API Restful Javascript com Node.js, Typescript, TypeORM etc
+Esta API foi desenvolvida com Node.js, TypeScript, Express, TypeORM e Docker. O projeto inclui módulos de produtos e vendas, documentação Swagger e uma infraestrutura local pronta para PostgreSQL, MySQL e Redis.
 
-Seja muito bem-vindo e bem-vinda ao curso: **API Restful Javascript com Node.js, Typescript, TypeORM etc**, aqui você desenvolverá um exemplo de uma API de vendas, com os módulos de produtos, usuários, clientes e pedidos de compras, além vários outros recursos, incluindo o uso do TypeORM, upload de arquivos, autenticação com JWT, sistema de cache com o Redis, e muito mais.
+## Requisitos
 
-Você precisará do Docker instalado em seu ambiente de desenvolvimento para rodar Postgres e Redis.
+Antes de começar, certifique-se de ter instalado:
 
-Este repositório contém o código inicial do projeto que será desenvolvido durante o curso. A ideia é ganhar tempo já trazendo todas as configurações iniciais prontas e focar naquilo que é mais importante, que é a implementação da API de fato.
+- Node.js 22+
+- Docker e Docker Compose
+- npm
 
-### Instalando o projeto no seu PC
+## Configuração inicial
 
-Instale o projeto em seu ambiente de desenvolvimento seguindo as etapas a seguir.
+1. Clone o repositório:
 
-> NOTA: caso o seu PC esteja com Windows, recomendo trabalhar com um WSL Ubuntu. Acesse o link https://www.aluiziodeveloper.com.br/ambiente-de-desenvolvimento-no-windows-10-11-com-wsl/ para mais informações.
-
-1. No Shell, clonar o repositório do projeto em seu PC.
-
-```shell
-git clone https://github.com/conexnetworks/apivendas2024-course-start-code.git api-vendas-2024
+```bash
+git clone <url-do-repositorio>
+cd api-vendas-2025
 ```
 
-2. No Shell, acessar a pasta do projeto e instalar as dependências com o `Npm`.
+2. Instale as dependências:
 
-```shell
-cd api-vendas-2024
-
-npm ci
+```bash
+npm install
 ```
 
-3. No Shell, executar o comando `code .` para abrir o Visual Studio Code com o projeto carregado.
+3. Crie o arquivo de ambiente:
 
-4. Criar o arquivo de variaveis de ambiente `.env` na pasta raiz do projeto, incluindo o conteúdo a seguir:
+O projeto já inclui o arquivo [.env](.env) com valores padrão para execução local. Você pode ajustar conforme necessário.
 
-```shell
-# Application
+Exemplo:
+
+```env
 PORT=3333
 API_URL=http://localhost:3333
+NODE_ENV=development
+
+DB_TYPE=postgres
+DB_HOST=localhost
+DB_PORT=5432
+DB_SCHELMA=public
+DB_NAME=postgres
+DB_USER=postgres
+DB_PASS=postgres
+
+REDIS_HOST=localhost
+REDIS_PORT=6379
 ```
 
-### Executando o projeto em seu PC
+## Executando localmente
 
-O projeto inicial contém apenas o arquivo `server.ts` com o um `console.log`. Executar o servidor e observar a mensagem `Olá Dev!` na console do shell:
+### Sem Docker
 
-```shell
+Para rodar a API localmente:
+
+```bash
 npm run dev
 ```
 
-**Partiu curso!**
+A aplicação ficará disponível em:
 
+- http://localhost:3333
+- Documentação Swagger: http://localhost:3333/docs
 
-## Redes Sociais
+## Executando com Docker
 
-[Site Conex Networks](https://conexnetworks.com.br)
+O projeto já possui um fluxo Docker com os serviços abaixo:
 
-[Blog Aluizio Developer](https://aluiziodeveloper.com.br)
+- API
+- PostgreSQL
+- MySQL
+- Redis
 
-[Perfil Udemy](https://www.udemy.com/user/jorge-aluizio-alves-de-souza/)
+### Subir todos os serviços
 
-[Cursos Gratuitos](https://letsgoahead.com.br/)
+```bash
+npm run docker:up
+```
 
-[YouTube](https://www.youtube.com/jorgealuizio)
+### Ver logs
 
-[Instagram](https://www.instagram.com/conexnetworks.dev/)
+```bash
+npm run docker:logs
+```
 
-[Servidor no Discord](https://discord.gg/3J87BMz5fD)
+### Encerrar os serviços
 
-[LinkedIn](https://www.linkedin.com/in/jorgealuizio/)
+```bash
+npm run docker:down
+```
+
+## Bancos de dados
+
+### PostgreSQL
+
+O PostgreSQL é o banco padrão da aplicação. Ele fica disponível em:
+
+- Host: localhost
+- Porta: 5432
+- Usuário: postgres
+- Senha: postgres
+- Banco: postgres
+
+### MySQL
+
+O MySQL também está disponível para uso local:
+
+- Host: localhost
+- Porta: 3306
+- Usuário: mysql
+- Senha: mysql
+- Banco: vendas
+
+### Redis
+
+O Redis é usado para cache e outras integrações locais:
+
+- Host: localhost
+- Porta: 6379
+
+## Swagger
+
+A documentação Swagger da API está disponível em:
+
+```text
+http://localhost:3333/docs
+```
+
+Ela contém as rotas de produtos e vendas, com exemplos de request e response.
+
+## Scripts disponíveis
+
+```bash
+npm run dev
+npm run lint
+npm run test
+npm run docker:up
+npm run docker:down
+npm run docker:logs
+```
+
+## Estrutura principal
+
+- src/common: configurações compartilhadas, erros, validações e infraestrutura comum
+- src/products: módulo de produtos
+- src/sales: módulo de vendas
+- src/common/infrastructure/http: rotas, app e middleware
+- src/common/infrastructure/typorm: migrations e configuração do TypeORM
+
+## Próximos passos
+
+Se você quiser evoluir a aplicação, os próximos pontos naturais são:
+
+- autenticação e autorização
+- camada de clientes
+- pedidos completos
+- cache com Redis mais integrado
+- testes de integração adicionais
