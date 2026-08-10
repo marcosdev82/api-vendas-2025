@@ -1,6 +1,16 @@
 # API de Vendas
 
-Esta API foi desenvolvida com Node.js, TypeScript, Express, TypeORM e Docker. O projeto inclui módulos de produtos e vendas, documentação Swagger e uma infraestrutura local pronta para PostgreSQL e Redis.
+Esta API foi desenvolvida com Node.js, TypeScript, Express, TypeORM e Docker. O projeto inclui módulos de produtos, vendas, clientes, usuários e carrinho, além de documentação Swagger, autenticação JWT, cache com Redis, logs estruturados e uma infraestrutura local pronta para PostgreSQL e Redis.
+
+## Funcionalidades principais
+
+- Gestão de produtos, vendas, clientes, usuários e carrinho
+- Autenticação com JWT e endpoint de login em `/auth/login`
+- Proteção da documentação Swagger com autenticação básica
+- Health check em `/health`
+- Cache de leitura com Redis para listagens e detalhes
+- Logs de requisições e respostas para rastreabilidade
+- CI com lint, typecheck e testes automatizados
 
 ## Requisitos
 
@@ -54,6 +64,16 @@ SWAGGER_SERVER_URL=http://localhost:3333
 SWAGGER_SERVER_URL_TEST=http://localhost:3334
 SWAGGER_SERVER_URL_PROD=https://api.example.com
 ```
+
+## Endpoints principais
+
+- `GET /health` — verificação de saúde da API
+- `POST /auth/login` — emissão de token JWT
+- `GET/POST/PUT/DELETE /products` — gestão de produtos
+- `GET/POST/PUT/DELETE /sales` — gestão de vendas
+- `GET/POST /customers` — cadastro e consulta de clientes
+- `GET/POST /users` — cadastro e consulta de usuários
+- `GET/POST /cart` — consulta e inclusão de itens no carrinho
 
 ## Executando localmente
 
@@ -123,7 +143,7 @@ A documentação Swagger da API está disponível em:
 http://localhost:3333/docs
 ```
 
-Ela contém as rotas de produtos e vendas, com exemplos de request e response.
+Ela contém as rotas de produtos, vendas, clientes, usuários e carrinho, com exemplos de request e response.
 
 ### Proteção da documentação
 
@@ -178,6 +198,106 @@ Você pode sobrescrever esses valores com:
 SWAGGER_SERVER_URL=http://localhost:3333
 SWAGGER_SERVER_URL_TEST=http://localhost:3334
 SWAGGER_SERVER_URL_PROD=https://api.example.com
+```
+
+## Exemplos prontos de uso
+
+### 1. Verificar a saúde da API
+
+```bash
+curl http://localhost:3333/health
+```
+
+Resposta esperada:
+
+```json
+{
+  "status": "ok",
+  "service": "api",
+  "database": "connected"
+}
+```
+
+### 2. Obter um token JWT
+
+```bash
+curl -X POST http://localhost:3333/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin123"}'
+```
+
+### 3. Criar um produto
+
+```bash
+curl -X POST http://localhost:3333/products \
+  -H "Authorization: Bearer <seu-token-jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "sku": "SKU-1001",
+    "name": "Headphones",
+    "description": "Wireless headphones",
+    "price": 299.99,
+    "cost_price": 180.5,
+    "quantity": 120,
+    "category": "Electronics",
+    "is_active": true,
+    "image_url": "https://example.com/headphones.png"
+  }'
+```
+
+### 4. Criar uma venda
+
+```bash
+curl -X POST http://localhost:3333/sales \
+  -H "Authorization: Bearer <seu-token-jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customer_name": "Jane Doe",
+    "product_id": "<id-do-produto>",
+    "quantity": 2,
+    "total_price": 599.98,
+    "status": "PENDING"
+  }'
+```
+
+### 5. Criar um cliente
+
+```bash
+curl -X POST http://localhost:3333/customers \
+  -H "Authorization: Bearer <seu-token-jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Jane Doe",
+    "email": "jane@example.com",
+    "phone": "11999999999",
+    "document": "12345678900"
+  }'
+```
+
+### 6. Criar um usuário
+
+```bash
+curl -X POST http://localhost:3333/users \
+  -H "Authorization: Bearer <seu-token-jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Admin User",
+    "email": "admin@example.com",
+    "password": "admin123"
+  }'
+```
+
+### 7. Adicionar um item ao carrinho
+
+```bash
+curl -X POST http://localhost:3333/cart \
+  -H "Authorization: Bearer <seu-token-jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user_id": "<id-do-usuario>",
+    "product_id": "<id-do-produto>",
+    "quantity": 1
+  }'
 ```
 
 ## Scripts disponíveis
