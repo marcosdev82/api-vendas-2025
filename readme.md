@@ -81,6 +81,21 @@ npm run docker:logs
 npm run docker:down
 ```
 
+### Migrations apos subir o Docker
+
+Depois de iniciar os containers, execute as migrations manualmente para criar as tabelas no banco:
+
+```bash
+npx dotenv-cli -e .env -- npx typeorm-ts-node-commonjs migration:show -d src/common/infrastructure/typeorm/index.ts
+npx dotenv-cli -e .env -- npx typeorm-ts-node-commonjs migration:run -d src/common/infrastructure/typeorm/index.ts
+```
+
+Se precisar desfazer a ultima migration:
+
+```bash
+npx dotenv-cli -e .env -- npx typeorm-ts-node-commonjs migration:revert -d src/common/infrastructure/typeorm/index.ts
+```
+
 Aplicacao local:
 
 - API: http://localhost:3333
