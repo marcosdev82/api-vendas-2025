@@ -85,9 +85,13 @@ describe('ProductsTypeormRepository integrations tests', () => {
       const data = ProductDataBuilder({})
       const product = testDataSource.manager.create(Product, data)
       await testDataSource.manager.save(product)
-      product.name = 'Nome atualizado'
 
-      const result = await ormRepository.update(product)
+      const updatedProduct = ProductModel.reconstitute({
+        ...data.toJSON(),
+        name: 'Nome atualizado',
+      })
+
+      const result = await ormRepository.update(updatedProduct)
       expect(result.name).toEqual('Nome atualizado')
     })
   })
@@ -174,8 +178,12 @@ describe('ProductsTypeormRepository integrations tests', () => {
 
   describe('search', () => {
     it('should  apply only pagination when the other params are null', async () => {
-      const arrange = Array(16).fill(ProductDataBuilder({}))
-      arrange.map(element => delete element.id)
+      const arrange = Array.from({ length: 16 }, (_, index) =>
+        ProductModel.reconstitute({
+          ...ProductDataBuilder({}).toJSON(),
+          created_at: new Date(Date.now() + index),
+        }),
+      )
       const data = testDataSource.manager.create(Product, arrange)
       await testDataSource.manager.save(data)
 
@@ -196,15 +204,16 @@ describe('ProductsTypeormRepository integrations tests', () => {
   it('should order by created_at DESC when search params are null', async () => {
       const created_at = new Date()
       const models: ProductModel[] = []
-      const arrange = Array(16).fill(ProductDataBuilder({}))
-      
+      const arrange = Array.from({ length: 16 }, () => ProductDataBuilder({}))
+
       arrange.forEach((element, index) => {
-          delete element.id
-          models.push({
-            ...element,
-            name: `Product ${index}`,
-            created_at: new Date(created_at.getTime() + index)
-          })
+          models.push(
+            ProductModel.reconstitute({
+              ...element.toJSON(),
+              name: `Product ${index}`,
+              created_at: new Date(created_at.getTime() + index),
+            }),
+          )
       })
 
       const data = testDataSource.manager.create(Product, models)
@@ -228,11 +237,14 @@ describe('ProductsTypeormRepository integrations tests', () => {
       const models: ProductModel[] = []
       
       'badec'.split('').forEach((element, index) => {
-          models.push({
-            ...ProductDataBuilder({}),
-            name: element,
-            created_at: new Date(created_at.getTime() + index)
-          })
+          const model = ProductDataBuilder({})
+          models.push(
+            ProductModel.reconstitute({
+              ...model.toJSON(),
+              name: element,
+              created_at: new Date(created_at.getTime() + index),
+            }),
+          )
       })
 
       const data = testDataSource.manager.create(Product, models)
@@ -269,11 +281,14 @@ describe('ProductsTypeormRepository integrations tests', () => {
     const models: ProductModel[] = []
     const values = ['test', 'a', 'TEST', 'b', 'TeSt']
     values.forEach((element, index) => {
-      models.push({
-        ...ProductDataBuilder({}),
-        name: element,
-        created_at: new Date(created_at.getTime() + index),
-      })
+      const model = ProductDataBuilder({})
+      models.push(
+        ProductModel.reconstitute({
+          ...model.toJSON(),
+          name: element,
+          created_at: new Date(created_at.getTime() + index),
+        }),
+      )
     })
     const data = testDataSource.manager.create(Product, models)
     await testDataSource.manager.save(data)
