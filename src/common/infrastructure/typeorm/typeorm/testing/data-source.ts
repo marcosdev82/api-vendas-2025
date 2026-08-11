@@ -9,8 +9,8 @@ export const testDataSource = new DataSource({
   password: env.DB_PASS,
   database: env.DB_NAME,
   schema: env.DB_SCHELMA,
-  entities: ['**/entities/**/*.ts'],
-  migrations: ['**/migrations/**/*.ts'],
+  entities: ['src/**/entities/**/*.ts'],
+  migrations: ['src/**/migrations/**/*.ts'],
   synchronize: true,
   logging: true,
 })

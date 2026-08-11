@@ -52,9 +52,10 @@ export class SalesTypeormRepository implements SalesRepository {
     const validSortDir = (props.sort_dir && dirOps.includes(props.sort_dir.toLowerCase())) || false
     const orderByField = validSort ? props.sort : 'created_at'
     const orderByDir = validSortDir ? props.sort_dir : 'desc'
+    const searchValue = props.filter ? `%${props.filter}%` : null
 
     const [sales, total] = await this.salesRepository.findAndCount({
-      ...(props.filter && { where: { customer_name: ILike(props.filter) } }),
+      ...(searchValue && { where: { customer_name: ILike(searchValue) } }),
       order: { [orderByField as string]: orderByDir },
       skip: (props.page - 1) * props.per_page,
       take: props.per_page,

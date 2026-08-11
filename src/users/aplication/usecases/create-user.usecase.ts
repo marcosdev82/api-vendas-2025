@@ -3,6 +3,7 @@ import { ConflictError } from '@/common/domain/errors/not-found-conflict-error'
 import { inject, injectable } from 'tsyringe'
 import { UsersRepository } from '@/users/domain/repositories/users.repository'
 import { hashPassword } from '@/common/infrastructure/auth/password'
+import { UserOutputDto, UserOutputMapper } from '@/users/aplication/dtos/user-output.dto'
 
 export namespace CreateUserUseCase {
   export type Input = {
@@ -11,14 +12,7 @@ export namespace CreateUserUseCase {
     password: string
   }
 
-  export type Output = {
-    id: string
-    name: string
-    email: string
-    password: string
-    created_at: Date
-    updated_at: Date
-  }
+  export type Output = UserOutputDto
 
   @injectable()
   export class UseCase {
@@ -36,7 +30,8 @@ export namespace CreateUserUseCase {
 
       const hashedPassword = await hashPassword(input.password)
       const user = this.usersRepository.create({ ...input, password: hashedPassword })
-      return this.usersRepository.insert(user)
+      const createdUser = await this.usersRepository.insert(user)
+      return UserOutputMapper.toOutput(createdUser)
     }
   }
 }

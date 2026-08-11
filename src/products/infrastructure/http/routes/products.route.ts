@@ -3,6 +3,7 @@ import { createProductController } from '../controllers/create-product.controlle
 import { getProductController } from '../controllers/get-product.controller'
 import { updateProductController } from '../controllers/update-product.controller'
 import { deleteProductController } from '../controllers/delete-product.controller'
+import { listProductController } from '../controllers/list-product.controller'
 import { cacheMiddleware } from '@/common/infrastructure/cache/cache-middleware'
 
 const productsRouter = Router()
@@ -111,6 +112,45 @@ productsRouter.post('/', createProductController)
 
 /**
  * @swagger
+ * /products:
+ *   get:
+ *     summary: List products
+ *     tags: [Products]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search by name, sku or category
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [name, price, created_at]
+ *       - in: query
+ *         name: sortOrder
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *     responses:
+ *       200:
+ *         description: Paginated products list
+ */
+productsRouter.get('/', cacheMiddleware(120), listProductController)
+
+/**
+ * @swagger
  * /products/{id}:
  *   get:
  *     summary: Get a product by ID
@@ -188,6 +228,6 @@ productsRouter.put('/:id', updateProductController)
  *       404:
  *         description: The product was not found
  */
-productsRouter.put('/:id', deleteProductController)
+productsRouter.delete('/:id', deleteProductController)
 
 export { productsRouter }

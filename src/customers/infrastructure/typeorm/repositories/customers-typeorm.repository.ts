@@ -9,7 +9,7 @@ import { CustomerModel } from '@/customers/domain/models/customers.model'
 
 @injectable()
 export class CustomersTypeormRepository implements CustomersRepository {
-  sortableFields: string[] = ['name', 'created_at']
+  sortableFields: string[] = ['name', 'email', 'created_at']
 
   constructor(
     @inject('CustomersDefaultTypeormRepository')
@@ -54,9 +54,15 @@ export class CustomersTypeormRepository implements CustomersRepository {
     const validSortDir = (props.sort_dir && dirOps.includes(props.sort_dir.toLowerCase())) || false
     const orderByField = validSort ? props.sort : 'created_at'
     const orderByDir = validSortDir ? props.sort_dir : 'desc'
+    const searchValue = props.filter ? `%${props.filter}%` : null
 
     const [customers, total] = await this.customersRepository.findAndCount({
-      ...(props.filter && { where: { name: ILike(props.filter) } }),
+      ...(searchValue && {
+        where: [
+          { name: ILike(searchValue) },
+          { email: ILike(searchValue) },
+        ],
+      }),
       order: { [orderByField as string]: orderByDir },
       skip: (props.page - 1) * props.per_page,
       take: props.per_page,

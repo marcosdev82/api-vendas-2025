@@ -13,4 +13,6 @@ export default {
   collectCoverageFrom: ['**/*.(t|j)s'],
   coverageDirectory: '../coverage',
   testEnvironment: 'node',
+  testPathIgnorePatterns: ['<rootDir>/api-vendas-2025/'],
+  modulePathIgnorePatterns: ['<rootDir>/api-vendas-2025/'],
 }

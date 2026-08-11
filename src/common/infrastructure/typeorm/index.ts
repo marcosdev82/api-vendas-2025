@@ -9,8 +9,8 @@ export const dataSource = new DataSource({
   database: env.DB_NAME,
   username: env.DB_USER,
   password: env.DB_PASS,
-  entities: ['**/entities/**/*.ts'],
-  migrations: ['**/migrations/**/*.ts'],
+  entities: ['src/**/entities/**/*.ts'],
+  migrations: ['src/**/migrations/**/*.ts'],
   synchronize: false,
   logging: false,
 });

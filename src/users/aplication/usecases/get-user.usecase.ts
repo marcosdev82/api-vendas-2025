@@ -1,16 +1,10 @@
 import { inject, injectable } from 'tsyringe'
 import { UsersRepository } from '@/users/domain/repositories/users.repository'
+import { UserOutputDto, UserOutputMapper } from '@/users/aplication/dtos/user-output.dto'
 
 export namespace GetUserUseCase {
   export type Input = { id: string }
-  export type Output = {
-    id: string
-    name: string
-    email: string
-    password: string
-    created_at: Date
-    updated_at: Date
-  }
+  export type Output = UserOutputDto
 
   @injectable()
   export class UseCase {
@@ -20,7 +14,8 @@ export namespace GetUserUseCase {
     ) {}
 
     async execute(input: Input): Promise<Output> {
-      return this.usersRepository.findById(input.id)
+      const user = await this.usersRepository.findById(input.id)
+      return UserOutputMapper.toOutput(user)
     }
   }
 }

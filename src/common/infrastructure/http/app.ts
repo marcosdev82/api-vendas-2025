@@ -9,6 +9,7 @@ import  sweggerJSDoc from 'swagger-jsdoc';
 import  sweggerUI from 'swagger-ui-express';
 import { swaggerAuthMiddleware } from './swagger-auth';
 import { jwtAuthMiddleware } from './jwt-auth';
+import { apiKeyAuthMiddleware } from './api-key-auth';
 import jwt from 'jsonwebtoken';
 import { comparePassword } from '../auth/password';
 import { dataSource } from '../typeorm';
@@ -75,7 +76,7 @@ app.get('/health', async (_req, res) => {
 })
 app.use('/docs', swaggerAuthMiddleware, sweggerUI.serve, sweggerUI.setup(swaggerSpec))
 
-app.post('/auth/login', async (req, res) => {
+app.post('/auth/login', apiKeyAuthMiddleware, async (req, res) => {
   const { username, password } = req.body ?? {}
 
   if (!username || !password) {
@@ -102,16 +103,20 @@ app.post('/auth/login', async (req, res) => {
 })
 
 app.use((req, res, next) => {
-  const isPublicRoute =
-    req.path.startsWith('/docs') ||
-    req.path.startsWith('/auth/login') ||
-    (req.path === '/users' && req.method === 'POST')
+  const isDocsRoute = req.path.startsWith('/docs')
+  const isJwtPublicRoute = req.path.startsWith('/auth/login') || (req.path === '/users' && req.method === 'POST')
 
-  if (isPublicRoute) {
+  if (isDocsRoute) {
     return next()
   }
 
-  return jwtAuthMiddleware(req, res, next)
+  return apiKeyAuthMiddleware(req, res, () => {
+    if (isJwtPublicRoute) {
+      return next()
+    }
+
+    return jwtAuthMiddleware(req, res, next)
+  })
 })
 
 app.use(routes)

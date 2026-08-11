@@ -60,6 +60,8 @@ REDIS_PORT=6379
 SWAGGER_USER=admin
 SWAGGER_PASS=admin123
 JWT_SECRET=dev-secret
+API_KEY_REQUIRED=false
+API_KEYS=chave-cliente-1,chave-cliente-2
 SWAGGER_SERVER_URL=http://localhost:3333
 SWAGGER_SERVER_URL_TEST=http://localhost:3334
 SWAGGER_SERVER_URL_PROD=https://api.example.com
@@ -189,10 +191,33 @@ curl -X POST http://localhost:3333/auth/login \
   -d '{"username":"admin@local.test","password":"admin123"}'
 ```
 
+### Autenticação por API Key (distribuição)
+
+Para distribuir sua API para terceiros, configure uma ou mais chaves em `API_KEYS` (separadas por vírgula):
+
+```env
+API_KEY_REQUIRED=true
+API_KEYS=chave-cliente-1,chave-cliente-2
+```
+
+Quando `API_KEY_REQUIRED=true`, as chamadas da API exigem `x-api-key`.
+
+No desenvolvimento local, mantenha `API_KEY_REQUIRED=false` para usar apenas JWT.
+
+Exemplo de login com API Key + JWT:
+
+```bash
+curl -X POST http://localhost:3333/auth/login \
+  -H "x-api-key: chave-cliente-1" \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin@local.test","password":"admin123"}'
+```
+
 Exemplo de uso:
 
 ```bash
 curl http://localhost:3333/products \
+  -H "x-api-key: chave-cliente-1" \
   -H "Authorization: Bearer <seu-token-jwt>"
 ```
 

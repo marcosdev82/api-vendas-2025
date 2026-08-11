@@ -7,6 +7,10 @@ export function cacheMiddleware(ttlSeconds = 60) {
       return next()
     }
 
+    if (process.env.NODE_ENV === 'test' || !redisClient.isOpen) {
+      return next()
+    }
+
     // Keep docs/auth flows uncached to avoid changing auth challenge behavior.
     if (req.path.startsWith('/docs') || req.path.startsWith('/auth')) {
       return next()

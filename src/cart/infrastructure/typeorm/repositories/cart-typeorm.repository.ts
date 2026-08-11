@@ -1,7 +1,7 @@
 import { SearchInput, SearchOutput } from '@/common/domain/repositories/repository.interfaces'
 import { NotFoundError } from '@/common/domain/errors/not-found-error'
 import { inject, injectable } from 'tsyringe'
-import { Repository, ILike } from 'typeorm'
+import { Repository } from 'typeorm'
 import { CartItem } from '../entities/cart.entity'
 import { CreateCartItemProps, CartRepository } from '@/cart/domain/repositories/cart.repository'
 import { CartItemModel } from '@/cart/domain/models/cart.model'
@@ -48,13 +48,20 @@ export class CartTypeormRepository implements CartRepository {
     const validSortDir = (props.sort_dir && dirOps.includes(props.sort_dir.toLowerCase())) || false
     const orderByField = validSort ? props.sort : 'created_at'
     const orderByDir = validSortDir ? props.sort_dir : 'desc'
+    const orderByDirection = String(orderByDir).toLowerCase() === 'asc' ? 'ASC' : 'DESC'
+    const searchValue = props.filter ? `%${props.filter}%` : null
 
-    const [items, total] = await this.cartRepository.findAndCount({
-      ...(props.filter && { where: { product_id: ILike(props.filter) } }),
-      order: { [orderByField as string]: orderByDir },
-      skip: (props.page - 1) * props.per_page,
-      take: props.per_page,
-    })
+    const queryBuilder = this.cartRepository.createQueryBuilder('cart_item')
+
+    if (searchValue) {
+      queryBuilder.where('CAST(cart_item.product_id AS TEXT) ILIKE :search', { search: searchValue })
+    }
+
+    const [items, total] = await queryBuilder
+      .orderBy(`cart_item.${orderByField}`, orderByDirection)
+      .skip((props.page - 1) * props.per_page)
+      .take(props.per_page)
+      .getManyAndCount()
 
     return {
       items,

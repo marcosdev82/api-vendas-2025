@@ -6,6 +6,7 @@ import { Product } from '@/products/infrastructure/typeorm/entities/products.ent
 import { ProductsTypeormRepository } from '@/products/infrastructure/typeorm/respositories/products-typeorm.repository';
 import { dataSource } from '@/common/infrastructure/typeorm';
 import { DeleteProductUseCase } from '@/products/aplication/usecases/delete-product.usecase';
+import { SearchProductUseCase } from '@/products/aplication/usecases/search-product.usecase';
 
 container.registerSingleton('ProductRepository', ProductsTypeormRepository);
 container.registerSingleton('CreateProductUseCase', CreateProductUseCase.UseCase);
@@ -20,3 +21,4 @@ container.registerSingleton('getProductUseCase', getProductUseCase.UseCase);
 container.registerSingleton('updateProductUseCase', UpdateProductUseCase.UseCase);
 
 container.registerSingleton('deleteProductUseCase', DeleteProductUseCase.UseCase);
+container.registerSingleton('SearchProductUseCase', SearchProductUseCase.UseCase);

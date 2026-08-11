@@ -96,22 +96,28 @@ salesRouter.post('/', createSaleController)
  *         name: page
  *         schema:
  *           type: integer
+ *           minimum: 1
  *       - in: query
- *         name: per_page
+ *         name: limit
  *         schema:
  *           type: integer
+ *           minimum: 1
+ *           maximum: 100
  *       - in: query
- *         name: sort
+ *         name: search
  *         schema:
  *           type: string
+ *         description: Search by customer name
  *       - in: query
- *         name: sort_dir
+ *         name: sortBy
  *         schema:
  *           type: string
+ *           enum: [created_at, status]
  *       - in: query
- *         name: filter
+ *         name: sortOrder
  *         schema:
  *           type: string
+ *           enum: [asc, desc]
  *     responses:
  *       200:
  *         description: The list of sales

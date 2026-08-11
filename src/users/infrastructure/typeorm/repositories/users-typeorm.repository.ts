@@ -9,7 +9,7 @@ import { UserModel } from '@/users/domain/models/users.model'
 
 @injectable()
 export class UsersTypeormRepository implements UsersRepository {
-  sortableFields: string[] = ['name', 'created_at']
+  sortableFields: string[] = ['name', 'email', 'created_at']
 
   constructor(
     @inject('UsersDefaultTypeormRepository')
@@ -54,9 +54,15 @@ export class UsersTypeormRepository implements UsersRepository {
     const validSortDir = (props.sort_dir && dirOps.includes(props.sort_dir.toLowerCase())) || false
     const orderByField = validSort ? props.sort : 'created_at'
     const orderByDir = validSortDir ? props.sort_dir : 'desc'
+    const searchValue = props.filter ? `%${props.filter}%` : null
 
     const [users, total] = await this.usersRepository.findAndCount({
-      ...(props.filter && { where: { name: ILike(props.filter) } }),
+      ...(searchValue && {
+        where: [
+          { name: ILike(searchValue) },
+          { email: ILike(searchValue) },
+        ],
+      }),
       order: { [orderByField as string]: orderByDir },
       skip: (props.page - 1) * props.per_page,
       take: props.per_page,
