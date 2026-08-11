@@ -339,3 +339,5 @@ npm run docker:logs
 - src/sales: módulo de vendas
 - src/common/infrastructure/http: rotas, app e middleware
 - src/common/infrastructure/typorm: migrations e configuração do TypeORM
+
+<img src="/fluxograma.png" />
