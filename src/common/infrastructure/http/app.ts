@@ -102,7 +102,12 @@ app.post('/auth/login', async (req, res) => {
 })
 
 app.use((req, res, next) => {
-  if (req.path.startsWith('/docs') || req.path === '/auth/login') {
+  const isPublicRoute =
+    req.path.startsWith('/docs') ||
+    req.path.startsWith('/auth/login') ||
+    (req.path === '/users' && req.method === 'POST')
+
+  if (isPublicRoute) {
     return next()
   }
 

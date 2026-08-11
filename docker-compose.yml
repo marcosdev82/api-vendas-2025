@@ -14,6 +14,7 @@ services:
       DB_NAME: ${DB_NAME:-postgres}
       DB_USER: ${DB_USER:-postgres}
       DB_PASS: ${DB_PASS:-postgres}
+      REDIS_URL: redis://redis:6379
       REDIS_HOST: ${REDIS_HOST_DOCKER:-redis}
       REDIS_PORT: ${REDIS_PORT_DOCKER:-6379}
       DB_HOST_DOCKER: postgres

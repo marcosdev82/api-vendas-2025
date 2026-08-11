@@ -169,12 +169,24 @@ Os endpoints da API agora exigem um token JWT no header `Authorization`:
 Authorization: Bearer <seu-token-jwt>
 ```
 
-Para obter um token de teste, faça uma requisição para o endpoint de login:
+Importante: o login JWT usa um usuário real salvo no banco (`email` + `password`).
+
+Você nao consegue gerar token sem existir ao menos um usuário cadastrado.
+
+Para criar o primeiro usuário (bootstrap), use a rota pública `POST /users`:
+
+```bash
+curl -X POST http://localhost:3333/users \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Admin","email":"admin@local.test","password":"admin123"}'
+```
+
+Depois disso, gere o token em `POST /auth/login`:
 
 ```bash
 curl -X POST http://localhost:3333/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"admin123"}'
+  -d '{"username":"admin@local.test","password":"admin123"}'
 ```
 
 Exemplo de uso:
@@ -220,10 +232,20 @@ Resposta esperada:
 
 ### 2. Obter um token JWT
 
+Se ainda nao existir usuário, crie primeiro:
+
+```bash
+curl -X POST http://localhost:3333/users \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Admin","email":"admin@local.test","password":"admin123"}'
+```
+
+Em seguida, faça login:
+
 ```bash
 curl -X POST http://localhost:3333/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"admin123"}'
+  -d '{"username":"admin@local.test","password":"admin123"}'
 ```
 
 ### 3. Criar um produto
@@ -278,7 +300,6 @@ curl -X POST http://localhost:3333/customers \
 
 ```bash
 curl -X POST http://localhost:3333/users \
-  -H "Authorization: Bearer <seu-token-jwt>" \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Admin User",
