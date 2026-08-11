@@ -1,45 +1,41 @@
 # API de Vendas
 
-Esta API foi desenvolvida com Node.js, TypeScript, Express, TypeORM e Docker. O projeto inclui módulos de produtos, vendas, clientes, usuários e carrinho, além de documentação Swagger, autenticação JWT, cache com Redis, logs estruturados e uma infraestrutura local pronta para PostgreSQL e Redis.
+API REST construida com Node.js, TypeScript, Express, TypeORM, PostgreSQL e Redis.
 
-## Funcionalidades principais
+O projeto cobre os modulos de produtos, vendas, clientes, usuarios e carrinho, com autenticacao JWT, protecao opcional por API Key, documentacao Swagger, cache de leitura e testes automatizados.
 
-- Gestão de produtos, vendas, clientes, usuários e carrinho
-- Autenticação com JWT e endpoint de login em `/auth/login`
-- Proteção da documentação Swagger com autenticação básica
+## Recursos
+
+- Autenticacao por JWT em `/auth/login`
+- Protecao opcional por API Key para distribuicao da API
+- Swagger protegido por Basic Auth em `/docs`
 - Health check em `/health`
-- Cache de leitura com Redis para listagens e detalhes
-- Logs de requisições e respostas para rastreabilidade
-- CI com lint, typecheck e testes automatizados
+- Listagens padronizadas com paginacao, busca e ordenacao
+- Busca por ID para produtos, clientes, usuarios e vendas
+- Reset seguro de senha de usuario
+- Testes unitarios e testes de integracao HTTP
 
-## Requisitos
-
-Antes de começar, certifique-se de ter instalado:
+## Stack
 
 - Node.js 22+
-- Docker e Docker Compose
-- npm
+- TypeScript
+- Express
+- TypeORM
+- PostgreSQL
+- Redis
+- Docker Compose
 
-## Configuração inicial
-
-1. Clone o repositório:
+## Instalacao
 
 ```bash
 git clone <url-do-repositorio>
 cd api-vendas-2025
-```
-
-2. Instale as dependências:
-
-```bash
 npm install
 ```
 
-3. Crie o arquivo de ambiente:
+## Ambiente
 
-O projeto já inclui o arquivo [.env](.env) com valores padrão para execução local. Você pode ajustar conforme necessário.
-
-Exemplo:
+Exemplo de configuracao local:
 
 ```env
 PORT=3333
@@ -60,224 +56,215 @@ REDIS_PORT=6379
 SWAGGER_USER=admin
 SWAGGER_PASS=admin123
 JWT_SECRET=dev-secret
+
 API_KEY_REQUIRED=false
 API_KEYS=chave-cliente-1,chave-cliente-2
+
 SWAGGER_SERVER_URL=http://localhost:3333
 SWAGGER_SERVER_URL_TEST=http://localhost:3334
 SWAGGER_SERVER_URL_PROD=https://api.example.com
 ```
 
-## Endpoints principais
+## Execucao
 
-- `GET /health` — verificação de saúde da API
-- `POST /auth/login` — emissão de token JWT
-- `GET/POST/PUT/DELETE /products` — gestão de produtos
-- `GET/POST/PUT/DELETE /sales` — gestão de vendas
-- `GET/POST /customers` — cadastro e consulta de clientes
-- `GET/POST /users` — cadastro e consulta de usuários
-- `GET/POST /cart` — consulta e inclusão de itens no carrinho
-
-## Executando localmente
-
-### Sem Docker
-
-Para rodar a API localmente:
+### Local
 
 ```bash
 npm run dev
 ```
 
-A aplicação ficará disponível em:
-
-- http://localhost:3333
-- Documentação Swagger: http://localhost:3333/docs
-
-## Executando com Docker
-
-O projeto já possui um fluxo Docker com os serviços abaixo:
-
-- API
-- PostgreSQL
-- Redis
-
-### Subir todos os serviços
+### Docker
 
 ```bash
 npm run docker:up
-```
-
-### Ver logs
-
-```bash
 npm run docker:logs
-```
-
-### Encerrar os serviços
-
-```bash
 npm run docker:down
 ```
 
-## Bancos de dados
+Aplicacao local:
 
-### PostgreSQL
+- API: http://localhost:3333
+- Swagger: http://localhost:3333/docs
 
-O PostgreSQL é o banco padrão da aplicação. Ele fica disponível em:
+## Autenticacao
 
-- Host: localhost
-- Porta: 5432
-- Usuário: postgres
-- Senha: postgres
-- Banco: postgres
+### Swagger
 
-### Redis
+A documentacao em `/docs` usa Basic Auth.
 
-O Redis é usado para cache e outras integrações locais:
+Credenciais padrao:
 
-- Host: localhost
-- Porta: 6379
-
-## Swagger
-
-A documentação Swagger da API está disponível em:
-
-```text
-http://localhost:3333/docs
-```
-
-Ela contém as rotas de produtos, vendas, clientes, usuários e carrinho, com exemplos de request e response.
-
-### Proteção da documentação
-
-A interface do Swagger agora está protegida por autenticação básica.
-
-Credenciais padrão:
-
-- Usuário: `admin`
+- Usuario: `admin`
 - Senha: `admin123`
 
-Você pode alterar essas credenciais via variáveis de ambiente:
+### JWT
 
-```env
-SWAGGER_USER=admin
-SWAGGER_PASS=admin123
-```
-
-### Autenticação da API (JWT)
-
-Os endpoints da API agora exigem um token JWT no header `Authorization`:
+As rotas protegidas exigem:
 
 ```http
-Authorization: Bearer <seu-token-jwt>
+Authorization: Bearer <token>
 ```
 
-Importante: o login JWT usa um usuário real salvo no banco (`email` + `password`).
+O login JWT usa um usuario real salvo no banco.
 
-Você nao consegue gerar token sem existir ao menos um usuário cadastrado.
-
-Para criar o primeiro usuário (bootstrap), use a rota pública `POST /users`:
+Se ainda nao existir usuario, crie o primeiro:
 
 ```bash
 curl -X POST http://localhost:3333/users \
   -H "Content-Type: application/json" \
-  -d '{"name":"Admin","email":"admin@local.test","password":"admin123"}'
+  -d '{"name":"Admin","email":"admin@local.test","password":"admin12345"}'
 ```
 
-Depois disso, gere o token em `POST /auth/login`:
+Depois faca login:
 
 ```bash
 curl -X POST http://localhost:3333/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"username":"admin@local.test","password":"admin123"}'
+  -d '{"username":"admin@local.test","password":"admin12345"}'
 ```
 
-### Autenticação por API Key (distribuição)
+### API Key
 
-Para distribuir sua API para terceiros, configure uma ou mais chaves em `API_KEYS` (separadas por vírgula):
+Para distribuir a API a terceiros, ative a camada extra de API Key:
 
 ```env
 API_KEY_REQUIRED=true
 API_KEYS=chave-cliente-1,chave-cliente-2
 ```
 
-Quando `API_KEY_REQUIRED=true`, as chamadas da API exigem `x-api-key`.
+Quando `API_KEY_REQUIRED=true`, as chamadas devem enviar:
 
-No desenvolvimento local, mantenha `API_KEY_REQUIRED=false` para usar apenas JWT.
+```http
+x-api-key: chave-cliente-1
+Authorization: Bearer <token>
+```
 
-Exemplo de login com API Key + JWT:
+Exemplo de login com API Key:
 
 ```bash
 curl -X POST http://localhost:3333/auth/login \
   -H "x-api-key: chave-cliente-1" \
   -H "Content-Type: application/json" \
-  -d '{"username":"admin@local.test","password":"admin123"}'
+  -d '{"username":"admin@local.test","password":"admin12345"}'
 ```
 
-Exemplo de uso:
+## Padrao de Listagem
 
-```bash
-curl http://localhost:3333/products \
-  -H "x-api-key: chave-cliente-1" \
-  -H "Authorization: Bearer <seu-token-jwt>"
-```
+Todo endpoint de lista segue o mesmo contrato de query string:
 
-### Ambientes disponíveis
+- `page`: pagina atual, minimo `1`
+- `limit`: quantidade por pagina, minimo `1`, maximo `100`
+- `search`: termo de busca
+- `sortBy`: campo permitido para ordenacao
+- `sortOrder`: `asc` ou `desc`
 
-A documentação inclui servidores para os ambientes abaixo:
+Compatibilidade legada mantida:
 
-- Desenvolvimento: `http://localhost:3333`
-- Teste: `http://localhost:3334`
-- Produção: `https://api.example.com`
+- `per_page`
+- `filter`
+- `sort`
+- `sort_dir`
 
-Você pode sobrescrever esses valores com:
-
-```env
-SWAGGER_SERVER_URL=http://localhost:3333
-SWAGGER_SERVER_URL_TEST=http://localhost:3334
-SWAGGER_SERVER_URL_PROD=https://api.example.com
-```
-
-## Exemplos prontos de uso
-
-### 1. Verificar a saúde da API
-
-```bash
-curl http://localhost:3333/health
-```
-
-Resposta esperada:
+Formato de resposta paginada:
 
 ```json
 {
-  "status": "ok",
-  "service": "api",
-  "database": "connected"
+  "items": [],
+  "total": 25,
+  "current_page": 1,
+  "per_page": 10,
+  "last_page": 3
 }
 ```
 
-### 2. Obter um token JWT
-
-Se ainda nao existir usuário, crie primeiro:
+Exemplo:
 
 ```bash
-curl -X POST http://localhost:3333/users \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Admin","email":"admin@local.test","password":"admin123"}'
+curl "http://localhost:3333/products?page=1&limit=10&search=mouse&sortBy=name&sortOrder=asc" \
+  -H "Authorization: Bearer <token>"
 ```
 
-Em seguida, faça login:
+## Endpoints
 
-```bash
-curl -X POST http://localhost:3333/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":"admin@local.test","password":"admin123"}'
-```
+### Base
 
-### 3. Criar um produto
+- `GET /` - mensagem inicial da API
+- `GET /health` - status da API e do banco
+- `POST /auth/login` - gera token JWT
+
+### Produtos
+
+- `POST /products` - cria produto
+- `GET /products` - lista produtos
+- `GET /products/:id` - busca produto por ID
+- `PUT /products/:id` - atualiza produto
+- `DELETE /products/:id` - remove produto
+
+Listagem de produtos:
+
+- Busca por `name`, `sku` e `category`
+- Ordenacao permitida: `name`, `price`, `created_at`
+
+### Clientes
+
+- `POST /customers` - cria cliente
+- `GET /customers` - lista clientes
+- `GET /customers/:id` - busca cliente por ID
+
+Listagem de clientes:
+
+- Busca por `name` e `email`
+- Ordenacao permitida: `name`, `email`, `created_at`
+
+### Usuarios
+
+- `POST /users` - cria usuario
+- `GET /users` - lista usuarios
+- `GET /users/:id` - busca usuario por ID
+- `PATCH /users/:id/reset-password` - reseta senha do usuario
+
+Listagem de usuarios:
+
+- Busca por `name` e `email`
+- Ordenacao permitida: `name`, `email`, `created_at`
+- Resposta nao expoe `password`
+
+Reset de senha:
+
+- recebe `newPassword`
+- senha e sempre armazenada com hash
+- senha em texto puro nunca e retornada
+
+### Vendas
+
+- `POST /sales` - cria venda
+- `GET /sales` - lista vendas
+- `GET /sales/:id` - busca venda por ID
+- `PUT /sales/:id` - atualiza venda
+- `DELETE /sales/:id` - remove venda
+
+Listagem de vendas:
+
+- Busca por `customer_name`
+- Ordenacao permitida: `created_at`, `status`
+
+### Carrinho
+
+- `POST /cart` - adiciona item ao carrinho
+- `GET /cart` - lista itens do carrinho
+
+Listagem de carrinho:
+
+- Busca por `product_id`
+- Ordenacao permitida: `created_at`
+
+## Exemplos
+
+### Criar produto
 
 ```bash
 curl -X POST http://localhost:3333/products \
-  -H "Authorization: Bearer <seu-token-jwt>" \
+  -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
   -d '{
     "sku": "SKU-1001",
@@ -292,77 +279,92 @@ curl -X POST http://localhost:3333/products \
   }'
 ```
 
-### 4. Criar uma venda
+### Listar clientes
 
 ```bash
-curl -X POST http://localhost:3333/sales \
-  -H "Authorization: Bearer <seu-token-jwt>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "customer_name": "Jane Doe",
-    "product_id": "<id-do-produto>",
-    "quantity": 2,
-    "total_price": 599.98,
-    "status": "PENDING"
-  }'
+curl "http://localhost:3333/customers?page=1&limit=10&search=maria&sortBy=name&sortOrder=asc" \
+  -H "Authorization: Bearer <token>"
 ```
 
-### 5. Criar um cliente
+### Buscar usuario por ID
 
 ```bash
-curl -X POST http://localhost:3333/customers \
-  -H "Authorization: Bearer <seu-token-jwt>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Jane Doe",
-    "email": "jane@example.com",
-    "phone": "11999999999",
-    "document": "12345678900"
-  }'
+curl http://localhost:3333/users/<id> \
+  -H "Authorization: Bearer <token>"
 ```
 
-### 6. Criar um usuário
+### Resetar senha de usuario
 
 ```bash
-curl -X POST http://localhost:3333/users \
+curl -X PATCH http://localhost:3333/users/<id>/reset-password \
+  -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
-  -d '{
-    "name": "Admin User",
-    "email": "admin@example.com",
-    "password": "admin123"
-  }'
+  -d '{"newPassword":"NovaSenhaSegura123"}'
 ```
 
-### 7. Adicionar um item ao carrinho
+### Listar vendas
 
 ```bash
-curl -X POST http://localhost:3333/cart \
-  -H "Authorization: Bearer <seu-token-jwt>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "user_id": "<id-do-usuario>",
-    "product_id": "<id-do-produto>",
-    "quantity": 1
-  }'
+curl "http://localhost:3333/sales?page=1&limit=10&search=Maria&sortBy=status&sortOrder=asc" \
+  -H "Authorization: Bearer <token>"
 ```
 
-## Scripts disponíveis
+### Listar carrinho
+
+```bash
+curl "http://localhost:3333/cart?page=1&limit=10&search=<prefixo-do-product-id>&sortBy=created_at&sortOrder=desc" \
+  -H "Authorization: Bearer <token>"
+```
+
+## Testes
+
+### Unitarios
+
+```bash
+npm test
+```
+
+### Integracao
+
+```bash
+npm run test:int
+```
+
+A suite de integracao HTTP cobre:
+
+- produtos
+- clientes
+- usuarios
+- reset de senha
+- vendas
+- carrinho
+- validacao de parametros de listagem
+
+## Scripts
 
 ```bash
 npm run dev
 npm run lint
 npm run test
+npm run test:int
 npm run docker:up
 npm run docker:down
 npm run docker:logs
 ```
 
-## Estrutura principal
+## Estrutura
 
-- src/common: configurações compartilhadas, erros, validações e infraestrutura comum
-- src/products: módulo de produtos
-- src/sales: módulo de vendas
-- src/common/infrastructure/http: rotas, app e middleware
-- src/common/infrastructure/typorm: migrations e configuração do TypeORM
+- `src/common` - infraestrutura compartilhada, auth, cache, env, validacao e HTTP
+- `src/products` - modulo de produtos
+- `src/customers` - modulo de clientes
+- `src/users` - modulo de usuarios
+- `src/sales` - modulo de vendas
+- `src/cart` - modulo de carrinho
+
+## Observacoes
+
+- Em desenvolvimento local, mantenha `API_KEY_REQUIRED=false`.
+- Em distribuicao, ative `API_KEY_REQUIRED=true` e defina `API_KEYS`.
+- O contrato mais completo da API pode ser consultado diretamente em `/docs`.
 
 <img src="/fluxograma.png" />
