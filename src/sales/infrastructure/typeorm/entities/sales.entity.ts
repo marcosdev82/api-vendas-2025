@@ -1,8 +1,7 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
-import { SaleModel } from '@/sales/domain/models/sales.model'
 
 @Entity('sales')
-export class Sale implements SaleModel {
+export class Sale {
   @PrimaryGeneratedColumn('uuid')
   id: string
 

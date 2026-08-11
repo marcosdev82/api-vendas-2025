@@ -1,8 +1,7 @@
-import { CartItemModel } from '@/cart/domain/models/cart.model'
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 
 @Entity('cart_items')
-export class CartItem implements CartItemModel {
+export class CartItem {
   @PrimaryGeneratedColumn('uuid')
   id: string
 

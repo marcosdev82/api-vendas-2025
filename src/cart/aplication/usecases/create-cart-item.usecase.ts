@@ -32,8 +32,8 @@ export namespace CreateCartItemUseCase {
 
       const existing = await this.cartRepository.findByUserAndProduct(input.user_id, input.product_id)
       if (existing) {
-        const updated = { ...existing, quantity: existing.quantity + input.quantity }
-        return this.cartRepository.update(updated)
+        existing.increaseQuantity(input.quantity)
+        return this.cartRepository.update(existing)
       }
 
       const item = this.cartRepository.create(input)

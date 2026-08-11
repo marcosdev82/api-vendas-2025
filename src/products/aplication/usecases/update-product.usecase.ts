@@ -35,39 +35,37 @@ export namespace UpdateProductUseCase {
           await this.productsRepository.conflictingName(input.name)
         }
 
-        product.name = input.name
+        product.rename(input.name)
       }
 
       if (input.sku) {
-        product.sku = input.sku
+        product.changeSku(input.sku)
       }
 
       if (input.description) {
-        product.description = input.description
+        product.changeDescription(input.description)
       }
 
-      if (input.price !== undefined) {
-        product.price = input.price
-      }
-
-      if (input.cost_price !== undefined) {
-        product.cost_price = input.cost_price
+      if (input.price !== undefined || input.cost_price !== undefined) {
+        const nextPrice = input.price ?? product.price
+        const nextCostPrice = input.cost_price ?? product.cost_price
+        product.changePricing(nextPrice, nextCostPrice)
       }
 
       if (input.quantity !== undefined) {
-        product.quantity = input.quantity
+        product.setQuantity(input.quantity)
       }
 
       if (input.category) {
-        product.category = input.category
+        product.changeCategory(input.category)
       }
 
       if (input.is_active !== undefined) {
-        product.is_active = input.is_active
+        product.setActive(input.is_active)
       }
 
       if (input.image_url !== undefined) {
-        product.image_url = input.image_url
+        product.setImageUrl(input.image_url)
       }
 
       const updatedProduct: ProductOutput = await this.productsRepository.update(product);

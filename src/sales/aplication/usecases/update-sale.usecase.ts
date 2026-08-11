@@ -23,15 +23,15 @@ export namespace UpdateSaleUseCase {
       const sale = await this.saleRepository.findById(input.id)
 
       if (input.customer_name) {
-        sale.customer_name = input.customer_name
+        sale.renameCustomer(input.customer_name)
       }
 
-      if (input.quantity) {
-        sale.quantity = input.quantity
+      if (input.quantity !== undefined) {
+        sale.setQuantity(input.quantity)
       }
 
       if (input.status) {
-        sale.status = input.status
+        sale.setStatus(input.status)
       }
 
       return this.saleRepository.update(sale)

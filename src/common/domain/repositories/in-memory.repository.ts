@@ -7,8 +7,7 @@ import {
 } from './repository.interfaces'
 
 export type ModelProps = {
-  id?: string
-  [key: string]: any
+  id: string
 }
 
 export type CreateProps = {
@@ -94,10 +93,13 @@ export abstract class InMemoryRepository<Model extends ModelProps>
     }
 
     return [...items].sort((a, b) => {
-      if (a[sort] < b[sort]) {
+      const left = (a as any)[sort]
+      const right = (b as any)[sort]
+
+      if (left < right) {
         return sort_dir === 'asc' ? -1 : 1
       }
-      if (a[sort] > b[sort]) {
+      if (left > right) {
         return sort_dir === 'asc' ? 1 : -1
       }
       return 0

@@ -30,14 +30,6 @@ export namespace CreateProductUseCase {
         throw new BadRequestError('Required product fields are missing')
       }
 
-      if (input.price <= 0 || input.cost_price < 0 || input.quantity <= 0) {
-        throw new BadRequestError('Price, cost price and quantity must be valid')
-      }
-
-      if (input.price < input.cost_price) {
-        throw new BadRequestError('Selling price cannot be lower than cost price')
-      }
-
       await this.productsRepository.conflictingName(input.name)
 
       const product = this.productsRepository.create({

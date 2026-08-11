@@ -24,7 +24,7 @@ export class ProductsTypeormRepository implements ProductsRepository {
       throw new NotFoundError(`Product not found using Name ${name}`);
     }
 
-    return product;
+    return this.toDomain(product);
   }
 
   async findAllByIds(productsIds: { id: string }[]): Promise<ProductModel[]> {
@@ -34,7 +34,7 @@ export class ProductsTypeormRepository implements ProductsRepository {
       where: { id: In(ids) }
     });
 
-    return productsFound;
+    return productsFound.map((product) => this.toDomain(product));
   }
 
   async conflictingName(name: string): Promise<void> {
@@ -46,11 +46,12 @@ export class ProductsTypeormRepository implements ProductsRepository {
   }
 
   create(props: CreateProductProps): ProductModel {
-    return this.productsRepository.create(props)
+    return ProductModel.create(props)
   }
 
   async insert(model: ProductModel): Promise<ProductModel> {
-    return this.productsRepository.save(model)
+    const product = await this.productsRepository.save(this.toPersistence(model))
+    return this.toDomain(product)
   }
 
   async findById(id: string): Promise<ProductModel> {
@@ -59,8 +60,8 @@ export class ProductsTypeormRepository implements ProductsRepository {
 
   async update(model: ProductModel): Promise<ProductModel> {
     await this._get(model.id)
-    await this.productsRepository.update({id: model.id}, model);
-    return model;
+    const updatedProduct = await this.productsRepository.save(this.toPersistence(model));
+    return this.toDomain(updatedProduct);
   }
 
   async delete(id: string): Promise<void> {
@@ -83,7 +84,7 @@ export class ProductsTypeormRepository implements ProductsRepository {
     })
 
     return {
-        items: products,
+      items: products.map((product) => this.toDomain(product)),
         per_page: props.per_page,
         total,
         current_page: props.page,
@@ -100,6 +101,27 @@ export class ProductsTypeormRepository implements ProductsRepository {
       throw new NotFoundError(`Product not found using ID ${id}`);
     }
 
-    return product;
+    return this.toDomain(product);
+  }
+
+  private toDomain(product: Product): ProductModel {
+    return ProductModel.reconstitute({
+      id: product.id,
+      sku: product.sku,
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      cost_price: product.cost_price,
+      quantity: product.quantity,
+      category: product.category,
+      is_active: product.is_active,
+      image_url: product.image_url ?? null,
+      created_at: product.created_at,
+      updated_at: product.updated_at,
+    })
+  }
+
+  private toPersistence(product: ProductModel): Product {
+    return this.productsRepository.create(product.toJSON())
   }
 }

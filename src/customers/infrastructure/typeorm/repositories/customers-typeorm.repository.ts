@@ -17,7 +17,8 @@ export class CustomersTypeormRepository implements CustomersRepository {
   ) {}
 
   async findByDocument(document: string): Promise<CustomerModel | null> {
-    return this.customersRepository.findOneBy({ document })
+    const customer = await this.customersRepository.findOneBy({ document })
+    return customer ? this.toDomain(customer) : null
   }
 
   async conflictingDocument(document: string): Promise<void> {
@@ -26,11 +27,12 @@ export class CustomersTypeormRepository implements CustomersRepository {
   }
 
   create(props: CreateCustomerProps): CustomerModel {
-    return this.customersRepository.create(props)
+    return CustomerModel.create(props)
   }
 
   async insert(model: CustomerModel): Promise<CustomerModel> {
-    return this.customersRepository.save(model)
+    const customer = await this.customersRepository.save(this.toPersistence(model))
+    return this.toDomain(customer)
   }
 
   async findById(id: string): Promise<CustomerModel> {
@@ -39,8 +41,8 @@ export class CustomersTypeormRepository implements CustomersRepository {
 
   async update(model: CustomerModel): Promise<CustomerModel> {
     await this._get(model.id)
-    await this.customersRepository.update({ id: model.id }, model)
-    return model
+    const updatedCustomer = await this.customersRepository.save(this.toPersistence(model))
+    return this.toDomain(updatedCustomer)
   }
 
   async delete(id: string): Promise<void> {
@@ -69,7 +71,7 @@ export class CustomersTypeormRepository implements CustomersRepository {
     })
 
     return {
-      items: customers,
+      items: customers.map((customer) => this.toDomain(customer)),
       per_page: props.per_page ?? 15,
       total,
       current_page: props.page ?? 1,
@@ -82,6 +84,22 @@ export class CustomersTypeormRepository implements CustomersRepository {
   protected async _get(id: string): Promise<CustomerModel> {
     const customer = await this.customersRepository.findOneBy({ id })
     if (!customer) throw new NotFoundError(`Customer not found using ID ${id}`)
-    return customer
+    return this.toDomain(customer)
+  }
+
+  private toDomain(customer: Customer): CustomerModel {
+    return CustomerModel.reconstitute({
+      id: customer.id,
+      name: customer.name,
+      email: customer.email,
+      phone: customer.phone,
+      document: customer.document,
+      created_at: customer.created_at,
+      updated_at: customer.updated_at,
+    })
+  }
+
+  private toPersistence(customer: CustomerModel): Customer {
+    return this.customersRepository.create(customer.toJSON())
   }
 }

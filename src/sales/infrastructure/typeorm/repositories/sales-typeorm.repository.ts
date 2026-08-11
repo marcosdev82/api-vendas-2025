@@ -20,15 +20,16 @@ export class SalesTypeormRepository implements SalesRepository {
     if (!sale) {
       throw new NotFoundError(`Sale not found using customer name ${customer_name}`)
     }
-    return sale
+    return this.toDomain(sale)
   }
 
   create(props: CreateSaleProps): SaleModel {
-    return this.salesRepository.create(props)
+    return SaleModel.create(props)
   }
 
   async insert(model: SaleModel): Promise<SaleModel> {
-    return this.salesRepository.save(model)
+    const sale = await this.salesRepository.save(this.toPersistence(model))
+    return this.toDomain(sale)
   }
 
   async findById(id: string): Promise<SaleModel | null> {
@@ -37,8 +38,8 @@ export class SalesTypeormRepository implements SalesRepository {
 
   async update(model: SaleModel): Promise<SaleModel> {
     await this._get(model.id)
-    await this.salesRepository.update({ id: model.id }, model)
-    return model
+    const updatedSale = await this.salesRepository.save(this.toPersistence(model))
+    return this.toDomain(updatedSale)
   }
 
   async delete(id: string): Promise<void> {
@@ -62,7 +63,7 @@ export class SalesTypeormRepository implements SalesRepository {
     })
 
     return {
-      items: sales,
+      items: sales.map((sale) => this.toDomain(sale)),
       per_page: props.per_page ?? 15,
       total,
       current_page: props.page ?? 1,
@@ -77,6 +78,23 @@ export class SalesTypeormRepository implements SalesRepository {
     if (!sale) {
       throw new NotFoundError(`Sale not found using ID ${id}`)
     }
-    return sale
+    return this.toDomain(sale)
+  }
+
+  private toDomain(sale: Sale): SaleModel {
+    return SaleModel.reconstitute({
+      id: sale.id,
+      customer_name: sale.customer_name,
+      product_id: sale.product_id,
+      quantity: sale.quantity,
+      total_price: sale.total_price,
+      status: sale.status,
+      created_at: sale.created_at,
+      updated_at: sale.updated_at,
+    })
+  }
+
+  private toPersistence(sale: SaleModel): Sale {
+    return this.salesRepository.create(sale.toJSON())
   }
 }

@@ -38,11 +38,7 @@ export namespace CreateSaleUseCase {
 
       const product = await this.productRepository.findById(input.product_id)
 
-      if (product.quantity < input.quantity) {
-        throw new BadRequestError('Insufficient stock for this sale')
-      }
-
-      product.quantity -= input.quantity
+      product.decreaseQuantity(input.quantity)
       await this.productRepository.update(product)
 
       const sale = this.saleRepository.create({

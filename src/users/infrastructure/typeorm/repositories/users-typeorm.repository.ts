@@ -17,7 +17,8 @@ export class UsersTypeormRepository implements UsersRepository {
   ) {}
 
   async findByEmail(email: string): Promise<UserModel | null> {
-    return this.usersRepository.findOneBy({ email })
+    const user = await this.usersRepository.findOneBy({ email })
+    return user ? this.toDomain(user) : null
   }
 
   async conflictingEmail(email: string): Promise<void> {
@@ -26,11 +27,12 @@ export class UsersTypeormRepository implements UsersRepository {
   }
 
   create(props: CreateUserProps): UserModel {
-    return this.usersRepository.create(props)
+    return UserModel.create(props)
   }
 
   async insert(model: UserModel): Promise<UserModel> {
-    return this.usersRepository.save(model)
+    const user = await this.usersRepository.save(this.toPersistence(model))
+    return this.toDomain(user)
   }
 
   async findById(id: string): Promise<UserModel> {
@@ -39,8 +41,8 @@ export class UsersTypeormRepository implements UsersRepository {
 
   async update(model: UserModel): Promise<UserModel> {
     await this._get(model.id)
-    await this.usersRepository.update({ id: model.id }, model)
-    return model
+    const updatedUser = await this.usersRepository.save(this.toPersistence(model))
+    return this.toDomain(updatedUser)
   }
 
   async delete(id: string): Promise<void> {
@@ -69,7 +71,7 @@ export class UsersTypeormRepository implements UsersRepository {
     })
 
     return {
-      items: users,
+      items: users.map((user) => this.toDomain(user)),
       per_page: props.per_page ?? 15,
       total,
       current_page: props.page ?? 1,
@@ -82,6 +84,21 @@ export class UsersTypeormRepository implements UsersRepository {
   protected async _get(id: string): Promise<UserModel> {
     const user = await this.usersRepository.findOneBy({ id })
     if (!user) throw new NotFoundError(`User not found using ID ${id}`)
-    return user
+    return this.toDomain(user)
+  }
+
+  private toDomain(user: User): UserModel {
+    return UserModel.reconstitute({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      password: user.password,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+    })
+  }
+
+  private toPersistence(user: UserModel): User {
+    return this.usersRepository.create(user.toJSON())
   }
 }

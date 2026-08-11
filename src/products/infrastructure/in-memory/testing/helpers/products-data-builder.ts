@@ -1,22 +1,25 @@
 import { faker } from '@faker-js/faker'
 import { ProductModel } from '@/products/domain/models/products.model'
-import { randomUUID } from 'node:crypto'
 
 export function ProductDataBuilder(props: Partial<ProductModel>): ProductModel {
-  return {
-    id: props.id ?? randomUUID(),
+  const fallbackCostPrice = Number(faker.commerce.price({ min: 50, max: 1000, dec: 2 }))
+  const costPrice = props.cost_price ?? (props.price !== undefined ? Number(Math.max(props.price - 10, 0).toFixed(2)) : fallbackCostPrice)
+  const defaultPrice = Number((costPrice + 10).toFixed(2))
+
+  return ProductModel.create({
+    id: props.id,
     sku: props.sku ?? faker.string.alphanumeric(8).toUpperCase(),
     name: props.name ?? faker.commerce.productName(),
     description: props.description ?? faker.commerce.productDescription(),
-    price: props.price ?? Number(faker.commerce.price({ min: 100, max: 2000, dec: 2 })),
-    cost_price: props.cost_price ?? Number(faker.commerce.price({ min: 50, max: 1000, dec: 2 })),
+    price: props.price ?? defaultPrice,
+    cost_price: costPrice,
     quantity: props.quantity ?? 10,
     category: props.category ?? faker.commerce.department(),
     is_active: props.is_active ?? true,
     image_url: props.image_url ?? null,
-    created_at: props.created_at ?? new Date(),
-    updated_at: props.updated_at ?? new Date(),
-  }
+    created_at: props.created_at,
+    updated_at: props.updated_at,
+  })
 }
 
 export const ProductsDataBuilder = ProductDataBuilder

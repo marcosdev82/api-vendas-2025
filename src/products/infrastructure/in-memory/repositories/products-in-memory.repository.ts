@@ -2,13 +2,17 @@ import { ConflictError } from "@/common/domain/errors/not-found-conflict-error";
 import { NotFoundError } from "@/common/domain/errors/not-found-error";
 import { InMemoryRepository } from "@/common/domain/repositories/in-memory.repository";
 import { ProductModel } from "@/products/domain/models/products.model";
-import { ProductId, ProductsRepository } from "@/products/domain/respositories/products.respository";
+import { CreateProductProps, ProductId, ProductsRepository } from "@/products/domain/respositories/products.respository";
 
 export class ProductsInMemoryRepository
   extends InMemoryRepository<ProductModel> 
   implements  ProductsRepository {
 
   sortableFields: string[] = ['name', 'created_at']
+
+  create(props: CreateProductProps): ProductModel {
+    return ProductModel.create(props)
+  }
 
   async findByName(name: string): Promise<ProductModel> {
     const product = this.items.find(item => item.name === name)

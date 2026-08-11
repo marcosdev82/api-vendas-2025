@@ -1,8 +1,7 @@
-import { CustomerModel } from '@/customers/domain/models/customers.model'
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 
 @Entity('customers')
-export class Customer implements CustomerModel {
+export class Customer {
   @PrimaryGeneratedColumn('uuid')
   id: string
 

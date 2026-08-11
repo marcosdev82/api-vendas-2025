@@ -16,15 +16,17 @@ export class CartTypeormRepository implements CartRepository {
   ) {}
 
   async findByUserAndProduct(user_id: string, product_id: string): Promise<CartItemModel | null> {
-    return this.cartRepository.findOneBy({ user_id, product_id })
+    const item = await this.cartRepository.findOneBy({ user_id, product_id })
+    return item ? this.toDomain(item) : null
   }
 
   create(props: CreateCartItemProps): CartItemModel {
-    return this.cartRepository.create(props)
+    return CartItemModel.create(props)
   }
 
   async insert(model: CartItemModel): Promise<CartItemModel> {
-    return this.cartRepository.save(model)
+    const item = await this.cartRepository.save(this.toPersistence(model))
+    return this.toDomain(item)
   }
 
   async findById(id: string): Promise<CartItemModel> {
@@ -33,8 +35,8 @@ export class CartTypeormRepository implements CartRepository {
 
   async update(model: CartItemModel): Promise<CartItemModel> {
     await this._get(model.id)
-    await this.cartRepository.update({ id: model.id }, model)
-    return model
+    const updatedItem = await this.cartRepository.save(this.toPersistence(model))
+    return this.toDomain(updatedItem)
   }
 
   async delete(id: string): Promise<void> {
@@ -64,7 +66,7 @@ export class CartTypeormRepository implements CartRepository {
       .getManyAndCount()
 
     return {
-      items,
+      items: items.map((item) => this.toDomain(item)),
       per_page: props.per_page ?? 15,
       total,
       current_page: props.page ?? 1,
@@ -77,6 +79,21 @@ export class CartTypeormRepository implements CartRepository {
   protected async _get(id: string): Promise<CartItemModel> {
     const item = await this.cartRepository.findOneBy({ id })
     if (!item) throw new NotFoundError(`Cart item not found using ID ${id}`)
-    return item
+    return this.toDomain(item)
+  }
+
+  private toDomain(item: CartItem): CartItemModel {
+    return CartItemModel.reconstitute({
+      id: item.id,
+      user_id: item.user_id,
+      product_id: item.product_id,
+      quantity: item.quantity,
+      created_at: item.created_at,
+      updated_at: item.updated_at,
+    })
+  }
+
+  private toPersistence(item: CartItemModel): CartItem {
+    return this.cartRepository.create(item.toJSON())
   }
 }

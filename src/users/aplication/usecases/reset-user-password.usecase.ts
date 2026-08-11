@@ -24,10 +24,8 @@ export namespace ResetUserPasswordUseCase {
       const user = await this.usersRepository.findById(input.id)
       const hashedPassword = await hashPassword(input.newPassword)
 
-      await this.usersRepository.update({
-        ...user,
-        password: hashedPassword,
-      })
+      user.changePassword(hashedPassword)
+      await this.usersRepository.update(user)
     }
   }
 }

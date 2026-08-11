@@ -15,17 +15,13 @@ describe('SearchProductUseCase Unit Tests', () => {
   test('should return the products ordered by created_at', async () => {
     const created_at = new Date()
     const items = [
-      { ...ProductDataBuilder({}) },
-      {
-        ...ProductDataBuilder({
-          created_at: new Date(created_at.getTime() + 100),
-        }),
-      },
-      {
-        ...ProductDataBuilder({
-          created_at: new Date(created_at.getTime() + 200),
-        }),
-      },
+      ProductDataBuilder({}),
+      ProductDataBuilder({
+        created_at: new Date(created_at.getTime() + 100),
+      }),
+      ProductDataBuilder({
+        created_at: new Date(created_at.getTime() + 200),
+      }),
     ]
     repository.items = items
 
@@ -42,11 +38,11 @@ describe('SearchProductUseCase Unit Tests', () => {
 
   test('should return output using pagination, sort and filter', async () => {
     const items = [
-      { ...ProductDataBuilder({ name: 'a' }) },
-      { ...ProductDataBuilder({ name: 'AA' }) },
-      { ...ProductDataBuilder({ name: 'Aa' }) },
-      { ...ProductDataBuilder({ name: 'b' }) },
-      { ...ProductDataBuilder({ name: 'c' }) },
+      ProductDataBuilder({ name: 'a' }),
+      ProductDataBuilder({ name: 'AA' }),
+      ProductDataBuilder({ name: 'Aa' }),
+      ProductDataBuilder({ name: 'b' }),
+      ProductDataBuilder({ name: 'c' }),
     ]
     repository.items = items
 

@@ -1,12 +1,16 @@
 import { InMemoryRepository } from '@/common/domain/repositories/in-memory.repository'
 import { NotFoundError } from '@/common/domain/errors/not-found-error'
 import { SaleModel } from '@/sales/domain/models/sales.model'
-import { SalesRepository } from '@/sales/domain/repositories/sales.repository'
+import { CreateSaleProps, SalesRepository } from '@/sales/domain/repositories/sales.repository'
 
 export class SalesInMemoryRepository
   extends InMemoryRepository<SaleModel>
   implements SalesRepository {
   sortableFields: string[] = ['created_at', 'status']
+
+  create(props: CreateSaleProps): SaleModel {
+    return SaleModel.create(props)
+  }
 
   async findByCustomerName(customer_name: string): Promise<SaleModel> {
     const sale = this.items.find(item => item.customer_name === customer_name)

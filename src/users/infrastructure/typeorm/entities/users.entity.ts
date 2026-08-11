@@ -1,8 +1,7 @@
-import { UserModel } from '@/users/domain/models/users.model'
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 
 @Entity('users')
-export class User implements UserModel {
+export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
