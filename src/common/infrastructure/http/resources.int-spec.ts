@@ -12,6 +12,9 @@ import { User } from '@/users/infrastructure/typeorm/entities/users.entity'
 import { Sale } from '@/sales/infrastructure/typeorm/entities/sales.entity'
 import { CartItem } from '@/cart/infrastructure/typeorm/entities/cart.entity'
 import { hashPassword } from '@/common/infrastructure/auth/password'
+import { ProductCategory } from '@/products/infrastructure/typeorm/entities/product-categories.entity'
+import { rmSync } from 'node:fs'
+import { resolve } from 'node:path'
 
 type JsonResponse = {
   status: number
@@ -52,10 +55,15 @@ describe('HTTP resources integration tests', () => {
     if (dataSource.isInitialized) {
       await dataSource.destroy()
     }
+
+    rmSync(resolve(process.cwd(), 'uploads', 'products'), {
+      recursive: true,
+      force: true,
+    })
   })
 
   beforeEach(async () => {
-    await dataSource.query('TRUNCATE TABLE cart_items, sales, products, customers, users RESTART IDENTITY CASCADE')
+    await dataSource.query('TRUNCATE TABLE cart_items, sales, products, product_categories, customers, users RESTART IDENTITY CASCADE')
   })
 
   async function requestJson(path: string, init?: RequestInit): Promise<JsonResponse> {
@@ -101,7 +109,39 @@ describe('HTTP resources integration tests', () => {
     })
   }
 
+  async function createProductCategory(overrides?: Partial<ProductCategory>): Promise<ProductCategory> {
+    return dataSource.getRepository(ProductCategory).save({
+      name: overrides?.name ?? 'General',
+      description: overrides?.description ?? 'Default category',
+      is_active: overrides?.is_active ?? true,
+    })
+  }
+
   describe('products', () => {
+    it('should reject creating product with non-existing category', async () => {
+      const { token } = await createUserAndToken()
+
+      const response = await requestJson('/products', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sku: 'SKU-CAT-404',
+          name: 'Product Without Category',
+          description: 'Should fail',
+          price: 100,
+          cost_price: 60,
+          quantity: 3,
+          category: 'UnknownCategory',
+        }),
+      })
+
+      expect(response.status).toBe(404)
+      expect(response.body.message).toContain('Product category not found')
+    })
+
     it('should list products using pagination, search and sort', async () => {
       await createUserAndToken()
 
@@ -181,6 +221,109 @@ describe('HTTP resources integration tests', () => {
       expect(response.status).toBe(200)
       expect(response.body.id).toBe(product.id)
       expect(response.body.name).toBe('Headset')
+    })
+
+    it('should upload a product image', async () => {
+      const { token } = await createUserAndToken()
+      await createProductCategory({ name: 'Audio' })
+      const product = await createProduct({ category: 'Audio' })
+
+      const formData = new FormData()
+      const imageBlob = new Blob([Uint8Array.from([137, 80, 78, 71, 13, 10, 26, 10])], {
+        type: 'image/png',
+      })
+      formData.append('image', imageBlob, 'product.png')
+
+      const uploadResponse = await fetch(`${baseUrl}/products/${product.id}/image`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      })
+
+      const responseBody = await uploadResponse.json()
+
+      expect(uploadResponse.status).toBe(200)
+      expect(responseBody.image_url).toContain('/uploads/products/')
+      expect(responseBody.id).toBe(product.id)
+    })
+  })
+
+  describe('product-categories', () => {
+    it('should perform CRUD for product categories', async () => {
+      const { token } = await createUserAndToken()
+
+      const created = await requestJson('/product-categories', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: 'Accessories',
+          description: 'Accessories and peripherals',
+          is_active: true,
+        }),
+      })
+
+      expect(created.status).toBe(201)
+      expect(created.body.name).toBe('Accessories')
+      expect(created.body.id).toEqual(expect.any(String))
+
+      const list = await requestJson('/product-categories?page=1&limit=10&search=Access&sortBy=name&sortOrder=asc', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      expect(list.status).toBe(200)
+      expect(list.body.total).toBe(1)
+      expect(list.body.items[0].name).toBe('Accessories')
+
+      const categoryId = created.body.id
+
+      const byId = await requestJson(`/product-categories/${categoryId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      expect(byId.status).toBe(200)
+      expect(byId.body.id).toBe(categoryId)
+
+      const updated = await requestJson(`/product-categories/${categoryId}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: 'Accessories Updated',
+          is_active: false,
+        }),
+      })
+
+      expect(updated.status).toBe(200)
+      expect(updated.body.name).toBe('Accessories Updated')
+      expect(updated.body.is_active).toBe(false)
+
+      const deleted = await requestJson(`/product-categories/${categoryId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      expect(deleted.status).toBe(204)
+
+      const missing = await requestJson(`/product-categories/${categoryId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      expect(missing.status).toBe(404)
     })
   })
 

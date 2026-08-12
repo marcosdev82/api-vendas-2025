@@ -18,6 +18,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { requestLoggerMiddleware } from './middleware/request-logger';
 import { cacheMiddleware } from '../cache/cache-middleware';
+import { resolve } from 'node:path';
 
 const swaggerServers = [
   {
@@ -43,6 +44,20 @@ const options = {
       description: 'API documentation',
     },
     servers: swaggerServers,
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+        apiKeyAuth: {
+          type: 'apiKey',
+          in: 'header',
+          name: 'x-api-key',
+        },
+      },
+    },
   },
   apis: ['./src/**/http/routes/*.ts'],
 }
@@ -62,6 +77,7 @@ app.use(requestLoggerMiddleware);
 app.use(cacheMiddleware(60));
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static(resolve(process.cwd(), 'uploads')))
 app.get('/health', async (_req, res) => {
   if (!dataSource.isInitialized) {
     return res.status(503).json({ status: 'error', service: 'api', database: 'disconnected' })

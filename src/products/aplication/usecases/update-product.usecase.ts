@@ -1,4 +1,5 @@
 import { ProductsRepository } from "@/products/domain/respositories/products.respository"
+import { ProductCategoriesRepository } from "@/products/domain/respositories/product-categories.respository"
 import { inject, injectable } from "tsyringe"
 import { ProductOutput } from "../dtos/product-output.dto"
 
@@ -24,6 +25,8 @@ export namespace UpdateProductUseCase {
     constructor(
       @inject('ProductRepository')
       private productsRepository: ProductsRepository,
+      @inject('ProductCategoryRepository')
+      private productCategoriesRepository: ProductCategoriesRepository,
     ) {}
 
     async execute(input: Input): Promise<Output> {
@@ -57,6 +60,7 @@ export namespace UpdateProductUseCase {
       }
 
       if (input.category) {
+        await this.productCategoriesRepository.ensureExistsByName(input.category)
         product.changeCategory(input.category)
       }
 

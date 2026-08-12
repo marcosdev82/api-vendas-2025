@@ -3,15 +3,28 @@ import { CreateProductUseCase } from "./create-product.usecase"
 import { ProductsInMemoryRepository } from "@/products/infrastructure/in-memory/repositories/products-in-memory.repository"
 import { ConflictError } from "@/common/domain/errors/not-found-conflict-error"
 import { BadRequestError } from "@/common/domain/errors/bad-request-error"
+import { ProductCategoriesRepository } from "@/products/domain/respositories/product-categories.respository"
 
 describe('CreateProductUseCase Unit Tests', () => {
   
   let sut: CreateProductUseCase.UseCase
   let repository: ProductsRepository
+  let categoriesRepository: ProductCategoriesRepository
 
   beforeEach(() => {
     repository = new ProductsInMemoryRepository()
-    sut = new CreateProductUseCase.UseCase(repository)
+    categoriesRepository = {
+      create: jest.fn(),
+      insert: jest.fn(),
+      findById: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      search: jest.fn(),
+      findByName: jest.fn(),
+      conflictingName: jest.fn(),
+      ensureExistsByName: jest.fn().mockResolvedValue(undefined),
+    }
+    sut = new CreateProductUseCase.UseCase(repository, categoriesRepository)
   })
 
   it('should create a product', async () => {

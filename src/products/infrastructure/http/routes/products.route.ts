@@ -5,6 +5,8 @@ import { updateProductController } from '../controllers/update-product.controlle
 import { deleteProductController } from '../controllers/delete-product.controller'
 import { listProductController } from '../controllers/list-product.controller'
 import { cacheMiddleware } from '@/common/infrastructure/cache/cache-middleware'
+import { uploadProductImageController } from '../controllers/upload-product-image.controller'
+import { uploadProductImageMiddleware } from '../middleware/upload-product-image.middleware'
 
 const productsRouter = Router()
 
@@ -74,6 +76,14 @@ const productsRouter = Router()
  *         image_url: https://example.com/images/headphones.png
  *         created_at: 2023-01-01T10:00:00Z
  *         updated_at: 2023-01-01T10:00:00Z
+ *     ProductImageUpload:
+ *       type: object
+ *       required:
+ *         - image
+ *       properties:
+ *         image:
+ *           type: string
+ *           format: binary
  */
 
 /**
@@ -109,6 +119,39 @@ const productsRouter = Router()
  */
 
 productsRouter.post('/', createProductController)
+
+/**
+ * @swagger
+ * /products/{id}/image:
+ *   post:
+ *     summary: Upload product image
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The product ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             $ref: '#/components/schemas/ProductImageUpload'
+ *     responses:
+ *       200:
+ *         description: Product image uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       400:
+ *         description: Invalid file
+ *       404:
+ *         description: Product not found
+ */
+productsRouter.post('/:id/image', uploadProductImageMiddleware.single('image'), uploadProductImageController)
 
 /**
  * @swagger

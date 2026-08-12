@@ -5,16 +5,29 @@ import { ProductsInMemoryRepository } from '@/products/infrastructure/in-memory/
 import { NotFoundError } from '@/common/domain/errors/not-found-error'
 import { ProductDataBuilder } from '@/products/infrastructure/in-memory/testing/helpers/products-data-builder'
 import { ConflictError } from '@/common/domain/errors/not-found-conflict-error'
+import { ProductCategoriesRepository } from '@/products/domain/respositories/product-categories.respository'
 
 
 describe('UpdateProductUseCase Unit Tests', () => {
   
   let sut: UpdateProductUseCase.UseCase
   let repository: ProductsRepository
+  let categoriesRepository: ProductCategoriesRepository
 
   beforeEach(() => {
     repository = new ProductsInMemoryRepository()
-    sut = new UpdateProductUseCase.UseCase(repository)
+    categoriesRepository = {
+      create: jest.fn(),
+      insert: jest.fn(),
+      findById: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      search: jest.fn(),
+      findByName: jest.fn(),
+      conflictingName: jest.fn(),
+      ensureExistsByName: jest.fn().mockResolvedValue(undefined),
+    }
+    sut = new UpdateProductUseCase.UseCase(repository, categoriesRepository)
   })
 
   it('should throws error when product not found', async () => {

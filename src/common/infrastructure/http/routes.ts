@@ -4,6 +4,7 @@ import { salesRouter } from '@/sales/infrastructure/http/routes/sales.route';
 import { usersRouter } from '@/users/infrastructure/http/routes/users.route';
 import { customersRouter } from '@/customers/infrastructure/http/routes/customers.route';
 import { cartRouter } from '@/cart/infrastructure/http/routes/cart.route';
+import { productCategoriesRouter } from '@/products/infrastructure/http/routes/product-categories.route';
 import { Router } from 'express'
 
 const routes = Router();
@@ -13,6 +14,7 @@ routes.get('/', (req, res) => {
 });
 
 routes.use('/products',  productsRouter);
+routes.use('/product-categories', productCategoriesRouter);
 routes.use('/sales', salesRouter);
 routes.use('/users', usersRouter);
 routes.use('/customers', customersRouter);

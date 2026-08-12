@@ -25,6 +25,7 @@ npm install -D @types/swagger-ui-express @types/swagger-jsdoc
 A API agora inclui:
 
 - módulos de produtos, vendas, clientes, usuários e carrinho
+- módulo de categorias de produtos
 - endpoint de autenticação em `/auth/login`
 - endpoint de saúde em `/health`
 - proteção da documentação Swagger com autenticação básica
@@ -32,6 +33,7 @@ A API agora inclui:
 - cache com Redis para leituras frequentes
 - logs de requisições e respostas
 - segurança com Helmet, rate limiting e hashing de senhas
+- upload de imagens para produtos via multipart/form-data
 
 ## Proteção do Swagger e da API
 
@@ -58,6 +60,8 @@ Depois de obter o token, utilize-o nas chamadas à API para acessar os endpoints
 - `GET /health` — verificação de saúde
 - `POST /auth/login` — autenticação
 - `GET/POST/PUT/DELETE /products` — catálogo de produtos
+- `POST /products/{id}/image` — upload da imagem do produto
+- `GET/POST/PUT/DELETE /product-categories` — categorias de produto
 - `GET/POST/PUT/DELETE /sales` — vendas
 - `GET/POST /customers` — clientes
 - `GET/POST /users` — usuários

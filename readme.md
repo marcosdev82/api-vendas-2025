@@ -210,10 +210,24 @@ curl "http://localhost:3333/products?page=1&limit=10&search=mouse&sortBy=name&so
 ### Produtos
 
 - `POST /products` - cria produto
+- `POST /products/:id/image` - faz upload da imagem do produto
 - `GET /products` - lista produtos
 - `GET /products/:id` - busca produto por ID
 - `PUT /products/:id` - atualiza produto
 - `DELETE /products/:id` - remove produto
+
+Regras:
+
+- A categoria informada no produto precisa existir em `product-categories`
+- Upload aceita `jpeg`, `png` e `webp` (maximo de 5MB)
+
+### Categorias de Produto
+
+- `POST /product-categories` - cria categoria
+- `GET /product-categories` - lista categorias
+- `GET /product-categories/:id` - busca categoria por ID
+- `PUT /product-categories/:id` - atualiza categoria
+- `DELETE /product-categories/:id` - remove categoria
 
 Listagem de produtos:
 

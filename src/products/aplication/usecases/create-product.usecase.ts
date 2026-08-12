@@ -1,5 +1,6 @@
 import { BadRequestError } from "@/common/domain/errors/bad-request-error"
 import { ProductsRepository } from "@/products/domain/respositories/products.respository"
+import { ProductCategoriesRepository } from "@/products/domain/respositories/product-categories.respository"
 import { inject, injectable } from "tsyringe"
 import { ProductOutput } from "../dtos/product-output.dto"
 
@@ -23,6 +24,8 @@ export namespace CreateProductUseCase {
     constructor(
       @inject('ProductRepository')
       private productsRepository: ProductsRepository,
+      @inject('ProductCategoryRepository')
+      private productCategoriesRepository: ProductCategoriesRepository,
     ) {}
 
     async execute(input: Input): Promise<Output> {
@@ -31,6 +34,7 @@ export namespace CreateProductUseCase {
       }
 
       await this.productsRepository.conflictingName(input.name)
+      await this.productCategoriesRepository.ensureExistsByName(input.category)
 
       const product = this.productsRepository.create({
         sku: input.sku,
