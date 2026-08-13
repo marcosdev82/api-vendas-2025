@@ -3,6 +3,7 @@ import { createUserController } from '../controllers/create-user.controller'
 import { getUserController } from '../controllers/get-user.controller'
 import { listUserController } from '../controllers/list-user.controller'
 import { resetUserPasswordController } from '../controllers/reset-user-password.controller'
+import { deleteUserController } from '../controllers/delete-user.controller'
 
 const usersRouter = Router()
 
@@ -143,5 +144,23 @@ usersRouter.get('/:id', getUserController)
  *         description: Password reset successfully
  */
 usersRouter.patch('/:id/reset-password', resetUserPasswordController)
+
+/**
+ * @swagger
+ * /users/{id}:
+ *   delete:
+ *     summary: Delete a user by ID
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       204:
+ *         description: User deleted successfully
+ */
+usersRouter.delete('/:id', deleteUserController)
 
 export { usersRouter }

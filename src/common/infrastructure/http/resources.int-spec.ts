@@ -500,6 +500,27 @@ describe('HTTP resources integration tests', () => {
       expect(loginResponse.status).toBe(200)
       expect(loginResponse.body.access_token).toEqual(expect.any(String))
     })
+
+    it('should delete a user by id', async () => {
+      const { user, token } = await createUserAndToken()
+
+      const deleteResponse = await requestJson(`/users/${user.id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      expect(deleteResponse.status).toBe(204)
+
+      const getAfterDelete = await requestJson(`/users/${user.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      expect(getAfterDelete.status).toBe(404)
+    })
   })
 
   describe('sales', () => {
