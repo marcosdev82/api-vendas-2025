@@ -1,6 +1,9 @@
 import { Router } from 'express'
 import { createCartItemController } from '../controllers/create-cart-item.controller'
 import { listCartController } from '../controllers/list-cart.controller'
+import { getCartItemController } from '../controllers/get-cart-item.controller'
+import { updateCartItemController } from '../controllers/update-cart-item.controller'
+import { deleteCartItemController } from '../controllers/delete-cart-item.controller'
 
 const cartRouter = Router()
 
@@ -94,5 +97,68 @@ cartRouter.post('/', createCartItemController)
  *         description: Cart items list
  */
 cartRouter.get('/', listCartController)
+
+/**
+ * @swagger
+ * /cart/{id}:
+ *   get:
+ *     summary: Get a cart item by ID
+ *     tags: [Cart]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: Cart item details
+ */
+cartRouter.get('/:id', getCartItemController)
+
+/**
+ * @swagger
+ * /cart/{id}:
+ *   put:
+ *     summary: Update a cart item quantity by ID
+ *     tags: [Cart]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               quantity:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Cart item updated successfully
+ */
+cartRouter.put('/:id', updateCartItemController)
+
+/**
+ * @swagger
+ * /cart/{id}:
+ *   delete:
+ *     summary: Remove a cart item by ID
+ *     tags: [Cart]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       204:
+ *         description: Cart item deleted successfully
+ */
+cartRouter.delete('/:id', deleteCartItemController)
 
 export { cartRouter }

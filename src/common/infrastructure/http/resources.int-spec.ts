@@ -383,6 +383,52 @@ describe('HTTP resources integration tests', () => {
       expect(response.body.id).toBe(customer.id)
       expect(response.body.email).toBe('maria@corp.test')
     })
+
+    it('should update and delete a customer', async () => {
+      const { token } = await createUserAndToken()
+      const customer = await dataSource.getRepository(Customer).save({
+        name: 'Maria',
+        email: 'maria@corp.test',
+        phone: '444444444',
+        document: '12345678904',
+      })
+
+      const updated = await requestJson(`/customers/${customer.id}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: 'Maria Souza',
+          email: 'maria.souza@corp.test',
+          phone: '555555555',
+          document: '12345678999',
+        }),
+      })
+
+      expect(updated.status).toBe(200)
+      expect(updated.body.name).toBe('Maria Souza')
+      expect(updated.body.email).toBe('maria.souza@corp.test')
+      expect(updated.body.phone).toBe('555555555')
+
+      const deleted = await requestJson(`/customers/${customer.id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      expect(deleted.status).toBe(204)
+
+      const missing = await requestJson(`/customers/${customer.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      expect(missing.status).toBe(404)
+    })
   })
 
   describe('users', () => {
@@ -536,6 +582,55 @@ describe('HTTP resources integration tests', () => {
       expect(response.body.items).toHaveLength(1)
       expect(response.body.items[0].product_id).toBe(productB.id)
       expect(response.body.items[0].quantity).toBe(2)
+    })
+
+    it('should get, update and delete a cart item', async () => {
+      const { user, token } = await createUserAndToken()
+      const product = await createProduct({ name: 'Keyboard' })
+      const cartItem = await dataSource.getRepository(CartItem).save({
+        user_id: user.id,
+        product_id: product.id,
+        quantity: 1,
+      })
+
+      const fetched = await requestJson(`/cart/${cartItem.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      expect(fetched.status).toBe(200)
+      expect(fetched.body.id).toBe(cartItem.id)
+      expect(fetched.body.quantity).toBe(1)
+
+      const updated = await requestJson(`/cart/${cartItem.id}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ quantity: 5 }),
+      })
+
+      expect(updated.status).toBe(200)
+      expect(updated.body.quantity).toBe(5)
+
+      const deleted = await requestJson(`/cart/${cartItem.id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      expect(deleted.status).toBe(204)
+
+      const missing = await requestJson(`/cart/${cartItem.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      expect(missing.status).toBe(404)
     })
   })
 

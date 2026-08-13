@@ -2,6 +2,8 @@ import { Router } from 'express'
 import { createCustomerController } from '../controllers/create-customer.controller'
 import { getCustomerController } from '../controllers/get-customer.controller'
 import { listCustomerController } from '../controllers/list-customer.controller'
+import { updateCustomerController } from '../controllers/update-customer.controller'
+import { deleteCustomerController } from '../controllers/delete-customer.controller'
 import { cacheMiddleware } from '@/common/infrastructure/cache/cache-middleware'
 
 const customersRouter = Router()
@@ -117,5 +119,47 @@ customersRouter.get('/', cacheMiddleware(120), listCustomerController)
  *         description: Customer details
  */
 customersRouter.get('/:id', cacheMiddleware(120), getCustomerController)
+
+/**
+ * @swagger
+ * /customers/{id}:
+ *   put:
+ *     summary: Update a customer by ID
+ *     tags: [Customers]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Customer'
+ *     responses:
+ *       200:
+ *         description: Customer updated successfully
+ */
+customersRouter.put('/:id', updateCustomerController)
+
+/**
+ * @swagger
+ * /customers/{id}:
+ *   delete:
+ *     summary: Delete a customer by ID
+ *     tags: [Customers]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       204:
+ *         description: Customer deleted successfully
+ */
+customersRouter.delete('/:id', deleteCustomerController)
 
 export { customersRouter }
